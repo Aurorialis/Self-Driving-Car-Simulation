@@ -1,0 +1,10 @@
+class carBrain(car):
+	"""creates the car object and determines how it should behave at each time step"""
+
+	# https://docs.python.org/3/tutorial/classes.html
+
+	# Initalize brain of the car
+		# maxAccel = maximum allowable acceleration
+	def __init__(self, maxAccel):
+
+	# Initialize all nine cars on the track
