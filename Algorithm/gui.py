@@ -1,5 +1,5 @@
 ##################
-## gui.pu
+## gui.py
 ##      Simple animation to display self-driving car simulation
 ##
 ##      Austin Chun
@@ -14,6 +14,21 @@ firstCarIndex = 7
 overlaps = []
 
 class GUI():
+
+    # Class constants
+    CAR_HEIGHT = 15
+    CAR_WIDTH = 10
+
+
+    # class guiCar():
+    #     def __init__(self, ID, direction, initPosX, initPosY,):
+    #         self.ID = ID
+    #         self.direction = direction # 0 = Vertical, 1 = Horizontal
+    #         # Upper left corner
+    #         self.x = initPosX
+    #         self.y = initPosY
+
+
 
     def __init__(self, rows, cols, width, height):
         self.rows = rows
@@ -31,12 +46,13 @@ class GUI():
         self.w = Canvas(self.tk, width=width, height=height)
         self.tk.title("Self Driving Car Simulation")
         self.w.pack()
+        # Buttons
         self.start = Button(self.tk, text="Start", command=self.startCall)
         self.start.pack()
         self.pause = Button(self.tk, text="Pause", command=self.pauseCall)
         self.pause.pack()
-        self.q = Button(self.tk, text="Quit", command=self.quitCall)
-        self.q.pack()
+        self.quit = Button(self.tk, text="Quit", command=self.quitCall)
+        self.quit.pack()
 
         # Create gridlines
         rowSpacing = height/(rows+1)
@@ -50,27 +66,28 @@ class GUI():
         for col in range(1,cols+1):
             self.w.create_line(col*colSpacing, 0, col*colSpacing, height)
 
-        # Initialize cars
-        carWidth = 10
-        carHeight = 15
-        self.carWidth = carWidth
-        self.carHeight = carHeight
 
-        self.cars = []
+        # Dictionary for car objects (in reality, just indexes as objects in self.w)
+        self.cars = {}
+        # Dictionary of car positions (center of body)
+        self.carPos = {}
         for i in range(cols):
-            # carDict["car"+str(i)] = w.create_rectangle(
-            self.cars.append(self.w.create_rectangle(
-                                (i+1)*colSpacing-carWidth/2, 0,
-                                (i+1)*colSpacing+carWidth/2, carHeight,
-                                fill='blue'))
-        for i in range(rows):
-            # carDict["car"+ str(i+cols)] = w.create_rectangle(
-            self.cars.append(self.w.create_rectangle(
-                                0, (i+1)*rowSpacing+carWidth/2,
-                                carHeight, (i+1)*rowSpacing-carWidth/2,
-                                fill='blue'))
+            self.carPos[i] = 0
+            self.cars[i] = self.w.create_rectangle(
+                                (i+1)*colSpacing-GUI.CAR_WIDTH/2, self.carPos[i]-GUI.CAR_HEIGHT/2,
+                                (i+1)*colSpacing+GUI.CAR_WIDTH/2, self.carPos[i]+GUI.CAR_HEIGHT/2,
+                                fill='blue')
 
-    
+        for i in range(rows):
+            self.carPos[i+cols] = 0
+            self.cars[i+cols] = self.w.create_rectangle(
+                                self.carPos[i+cols]-GUI.CAR_HEIGHT/2, (i+1)*rowSpacing-GUI.CAR_WIDTH/2,
+                                self.carPos[i+cols]+GUI.CAR_HEIGHT/2, (i+1)*rowSpacing+GUI.CAR_WIDTH/2,
+                                fill='blue')
+
+        # Show GUI
+        self.tk.update()
+
     def startCall(self):
         if not self.startFlag:
             self.startFlag = True
@@ -83,22 +100,45 @@ class GUI():
         # self.tk.destroy()
 
 
-    def move(self):
-        if self.startFlag:
-            inc = 2
-        else:
-            inc = 0
+    # def move(self):
+    #     if self.startFlag:
+    #         inc = 2
+    #     else:
+    #         inc = 0
 
-        for col in range(self.cols):
-            if(self.w.coords(self.cars[col])[1] >= self.height):
-                self.w.move(self.cars[col], 0, -(self.height+self.carHeight))
-            # print(self.w.coords(self.cars[col])[3])
-            self.w.move(self.cars[col], 0, inc)
-        for row in range(self.rows):
-            if(self.w.coords(self.cars[self.cols+row])[0] >= self.width):
-                self.w.move(self.cars[self.cols+row], -(self.width+self.carHeight), 0)
-            self.w.move(self.cars[self.cols+row], inc, 0)
-        self.tk.update()
+    #     for col in range(self.cols):
+    #         if(self.w.coords(self.cars[col])[1] >= self.height):
+    #             self.w.move(self.cars[col], 0, -(self.height+self.CAR_HEIGHT))
+    #             self.carPos[col] -= self.height+self.CAR_HEIGHT
+    #         self.w.move(self.cars[col], 0, inc)
+
+    #         self.carPos[col] += inc
+
+
+    #     for row in range(self.rows):
+    #         if(self.w.coords(self.cars[row+self.cols])[0] >= self.width):
+    #             self.w.move(self.cars[row+self.cols], -(self.width+self.CAR_HEIGHT), 0)
+    #             self.carPos[row+self.cols] -= (self.width+self.CAR_HEIGHT)
+    #         self.w.move(self.cars[row+self.cols], inc, 0)
+
+    #         self.carPos[row+self.cols] += inc
+
+
+    def animate(self, carPositions):
+        # if self.startFlag:
+        for i in range(self.numCars):
+            self.moveCar(i, carPositions[i][0])
+
+    def moveCar(self, carNum, pos): # Note: 1D position, determine direction from carNum
+        if carNum < self.cols:
+            self.w.move(self.cars[carNum], 0, (pos - self.carPos[carNum]))
+            self.carPos[carNum] += pos - self.carPos[carNum]
+        elif carNum < self.cols + self.rows:
+            self.w.move(self.cars[carNum], (pos - self.carPos[carNum]), 0)
+            self.carPos[carNum] += pos - self.carPos[carNum]
+        else:
+            print("ERROR: Invalid Car index, %d" %carNum)
+
 
     def checkCollision(self):
         global firstCarIndex
@@ -123,17 +163,46 @@ class GUI():
         # Reset collision list
         overlaps = []
 
-g = GUI(3,3,600,400)
-g.tk.update()
 
 
+###############
+# Test Script #
+###############
+
+NUM_CARS = 6
+WINDOW_WIDTH = 400
+WINDOW_HEIGHT = 147
+
+carPos = [[0],[0],[0],[0],[0],[0]]
+def generateMoves(carPos):
+
+    for i in range(NUM_CARS):
+        carPos[i][0] += random.randint(1,5)
+        # print(carPos[i][0])
+        if(i < 3):
+            carPos[i][0] = carPos[i][0] % WINDOW_HEIGHT
+        else:
+            carPos[i][0] = carPos[i][0] % WINDOW_WIDTH
+        # print(carPos)
+    return carPos
+
+
+
+g = GUI(3,3,WINDOW_WIDTH,WINDOW_HEIGHT)
 while True:
     if g.notQuit:
-        g.move()
-        g.checkCollision()
-        time.sleep(0.01)
+        # g.move()
+        if g.startFlag:
+            carPos = generateMoves(carPos)
+            g.animate(carPos)
+            g.checkCollision()
+
+
+        g.tk.update_idletasks()
+        g.tk.update()
+        time.sleep(0.02)
     else:
         g.tk.destroy()
         break
 print("Closed GUI")
-g.tk.mainloop()
+# g.tk.mainloop()
