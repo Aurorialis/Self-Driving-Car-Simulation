@@ -171,13 +171,13 @@ class GUI():
 
 NUM_CARS = 6
 WINDOW_WIDTH = 400
-WINDOW_HEIGHT = 147
+WINDOW_HEIGHT = 300
 
 carPos = [[0],[0],[0],[0],[0],[0]]
 def generateMoves(carPos):
 
     for i in range(NUM_CARS):
-        carPos[i][0] += random.randint(1,5)
+        carPos[i][0] += (random.randint(1,4)+ i%2)
         # print(carPos[i][0])
         if(i < 3):
             carPos[i][0] = carPos[i][0] % WINDOW_HEIGHT
