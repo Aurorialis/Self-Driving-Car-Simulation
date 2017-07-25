@@ -29,27 +29,77 @@ class Car(Track):
 #                        Location                           #
 ##############################################################
 
+
+	# Determines the next upcoming intersection
 	def nearestIntersect(self):
 
 		intersections = self.getIntersections()
 
-		if self.getTrackNo() % 2 = 0: # horizontal track
+		if self.getTrackNo() % 2 == 0: # horizontal track
 			# get exact row pixel number
 			rowNum = self.getTrackNo()/2
-			rowPixel = rowNum * self.getRowSpacing()
+			pixel = rowNum * self.getRowSpacing() # row number of the track
+			currentMin = self.getWidth()
 
-			#sameRow for sameRow in intersections if sameRow[0].startswith('rowPixel')
+			trackType = horizontal
 
 		else: # vertical track
 			# get exact col pixel number
 			colNum = floor(self.getTrackNo()/2)
-			colPixel = colNum * self.getColSpacing()
+			pixel = colNum * self.getColSpacing() # column number of the track
+			currentMinn = self.getHeight()
+
+			trackType = vertical
+
+		# loop through list of list of intersections, and find next upcoming intersection			
+		for i in intersections:
+			if trackType == horizontal:
+				whereTrack = i[2] # row value of the horizontal track
+				whereOnTrack = i[1] # location of vertical intersection with the track
+				spacing = self.getRowSpacing()
+				lastLane = spacing * self.getRows()
+
+			else:
+				whereTrack = i[1] # col value of the vertical track
+				whereOnTrack = i[2] # location of horizontal intersection with the track
+				spacing = self.getColSpacing()
+				lastLane = spacing * self.getCols()
+
+			# eliminate intersections on a different row/column
+			if whereTrack != pixel:
+				continue
+
+			# find the nearest intersection
+			else:
+				# check if next intersection is wrapped around on the other side of the track
+				if self.getPos() >= lastLane:
+					newMin = whereOnTrack
+						if newMin < currentMin:
+							currentMin = newMin
+							nearestIntersect = i 
+						else:
+							continue
+
+				# eliminate all intersections that are behind the car
+				else if whereTrack <= self.getPos() && self.getPos() < lastLane :
+						continue
+
+				# next intersection does not wrap around to the other side
+				else:
+						newMin = whereTrack - self.getPos() 
+						if newMin < currentMin:
+							currentMin = newMin
+							nearestIntersect = i 
+						else:
+							continue
+
+		return nearestIntersect
 
 
 
 
 ##############################################################
-#                      Update Values                         #
+#                      Update whereTrackues                         #
 ##############################################################
 
 
@@ -88,7 +138,7 @@ class Car(Track):
 
 	# slow the car down
 	def brake():
-		self.getPVA[3] = -3 # random acceleration value - figure this out
+		self.getPVA[3] = -3 # random acceleration whereTrackue - figure this out
 		self.updatePV()
 
 

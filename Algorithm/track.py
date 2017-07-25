@@ -8,6 +8,12 @@ class Track:
         self.height = height
 
 
+        def getRows():
+        	return self.rows
+
+        def getCols():
+        	return self.cols
+
 		def getWidth():
 			return self.width
 
