@@ -191,12 +191,10 @@ def generateMoves(carPos):
 g = GUI(3,3,WINDOW_WIDTH,WINDOW_HEIGHT)
 while True:
     if g.notQuit:
-        # g.move()
         if g.startFlag:
             carPos = generateMoves(carPos)
             g.animate(carPos)
             g.checkCollision()
-
 
         g.tk.update_idletasks()
         g.tk.update()
@@ -205,4 +203,5 @@ while True:
         g.tk.destroy()
         break
 print("Closed GUI")
+
 # g.tk.mainloop()
