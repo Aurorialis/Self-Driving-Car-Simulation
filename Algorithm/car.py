@@ -12,15 +12,23 @@ class Car(Track):
 		self.getPVA = [initPos initV initAccel]
 
 
+	# returns the track number that the car is on
 	def getTrackNo(self):
 		return trackNumber
 
+	# returns a list containing the current position, velocity, and acceleration of the car
+	def getPVA(self):
+		return self.getPVA
+
+	# returns only the positions of the car (int)
 	def getPos(self):
 		return self.getPVA[1]
 
+	# returns only the velocity of the car
 	def getV(self):
 		return self.getPVA[2]
 
+	# returns only the acceleration of the car
 	def getAccel(self):
 		return self.getPVA[3]
 
@@ -28,7 +36,6 @@ class Car(Track):
 ##############################################################
 #                        Location                           #
 ##############################################################
-
 
 	# Determines the next upcoming intersection
 	def nearestIntersect(self):
@@ -95,15 +102,13 @@ class Car(Track):
 
 		return nearestIntersect
 
-
-
-
 ##############################################################
-#                      Update whereTrackues                         #
+#                      Update whereTrackues                  #
 ##############################################################
 
 
 	# updates the position and velocity of the car based on current PVA
+	# only to be used with the class Car - use other update functions to move car on track
 	def updatePV(self):
 
 		# Update postion
@@ -136,7 +141,7 @@ class Car(Track):
 	def moveConstantAccel():
 		self.updatePV()
 
-	# slow the car down
+	# slow the car down !!!!!!!!!!!!!!!!
 	def brake():
 		self.getPVA[3] = -3 # random acceleration whereTrackue - figure this out
 		self.updatePV()
