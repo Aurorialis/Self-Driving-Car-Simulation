@@ -8,29 +8,32 @@ class Car(Track):
 		# initV = initial velocity of the car on the track
 		# initAccel = initial acceleration of the car on the track
 
-	def __init__(self, trackNumber, initPos, initV, initAccel):
-		self.getPVA = [initPos initV initAccel]
+		# maximum acceleration of a car (both speeding up and braking)
+		maxAccel = 10
+		maxBrake = -10
 
+	def __init__(self, trackNumber, initPos, initV, initAccel):
+		self.PVA = [initPos initV initAccel]
+		self.trackNumber = trackNumber
 
 	# returns the track number that the car is on
 	def getTrackNo(self):
-		return trackNumber
-
-	# returns a list containing the current position, velocity, and acceleration of the car
-	def getPVA(self):
-		return self.getPVA
+		return self.trackNumber
 
 	# returns only the positions of the car (int)
 	def getPos(self):
-		return self.getPVA[1]
+		return self.PVA[0]
 
 	# returns only the velocity of the car
 	def getV(self):
-		return self.getPVA[2]
+		return self.PVA[1]
 
 	# returns only the acceleration of the car
 	def getAccel(self):
-		return self.getPVA[3]
+		return self.PVA[2]
+
+	def setAccel(self, newAccel):
+		self.PVA[2] = newAccel
 
 
 ##############################################################
@@ -103,7 +106,7 @@ class Car(Track):
 		return nearestIntersect
 
 ##############################################################
-#                      Update whereTrackues                  #
+#                      Update Track                          #
 ##############################################################
 
 
@@ -114,6 +117,12 @@ class Car(Track):
 		# Update postion
 		newPos = self.getPos() + self.getV()*timeStep + 0.5*self.getAccel()*timeStep^2
 
+		# make sure that the car does not start moving backwards
+		if newPos < self.getPos():
+			newPos = self.getPos()
+		else:
+			continue
+
 		# wrap around the track if car is about to run off of the track
 
 		if self.getTrackNo % 2 = 0: # even track, tracks runs horizontally
@@ -122,28 +131,59 @@ class Car(Track):
 			trackLength = getHeight()
 
 		if newPos <= trackLength:
-			self.getPVA[1] = newPos
+			self.PVA[1] = newPos
 		else: 
-			self.getPVA[1] = newPos - trackLength
+			self.PVA[1] = newPos - trackLength
 
 		# Update Velocity
-		self.getPVA[2] = self.getV() + self.getAccel()*timeStep
+		newV = self.getV() + self.getAccel()*timeStep
 
-		print self.getPVA
+		# make sure car does not start moving backwards
+		if newV < 0:
+			newV = 0
+		else:
+			continue
+
+		self.PVA[2] = newV
 
 
 	# move the car with constant velocity
 	def moveConstantV()
-		self.getPVA[3] = 0
+		self.setAccel(0)
 		self.updatePV()
 
 	# move the car with constant acceleration
 	def moveConstantAccel():
 		self.updatePV()
 
-	# slow the car down !!!!!!!!!!!!!!!!
+	def speedUp():
+		# if car is already speeding up, increase acceleration
+		if self.PVA[2] > 0:
+			self.PVA[2] += 0.1*(self.PVA[2])
+		# if car is not accelerating yet, begin accelerating
+		else:
+			self.PVA[2] = 3
+		# update position and velocity based on braking
+		self.updatePV()
+
+	def lightSpeed():
+		self.PVA[2] = maxAccel
+		self.updatePV()
+
+	# slow the car down
 	def brake():
-		self.getPVA[3] = -3 # random acceleration whereTrackue - figure this out
+		# if car is already braking, increase braking amount
+		if self.PVA[2] < 0:
+			self.PVA[2] += 0.1*(self.PVA[2])
+		# if car is not braking yet, begin braking
+		else:
+			self.PVA[2] = -3
+		# update position and velocity based on braking
+		self.updatePV()
+
+	# brake as quickly as possible
+	def brakeHard():
+		self.PVA[2] = maxBrake
 		self.updatePV()
 
 
