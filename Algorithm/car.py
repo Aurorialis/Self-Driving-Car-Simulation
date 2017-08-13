@@ -12,7 +12,9 @@ class Car(Track):
 		maxAccel = 10
 		maxBrake = -10
 
-	def __init__(self, trackNumber, initPos, initV, initAccel):
+	def __init__(self, trackNumber, initPos, initV, initAccel, carLength, carWidth):
+		self.carWidth = carWidth # length of the car
+		self.carLength = carLength # width of the car
 		self.PVA = [initPos initV initAccel]
 		self.trackNumber = trackNumber
 
@@ -105,6 +107,40 @@ class Car(Track):
 
 		return nearestIntersect
 
+	# Get the time in which the car will start crossing the intersection, and will leave the intersection
+	# returns a list of size two
+	# the first item is when the leading edge of the car enters the intersection
+	# the second item is when the lagging edge of the car leaves the intersection
+	def intersectionTimes(self):
+
+		# get relevant location of next intersection (single value instead of a coordinate)
+		# depends on whether car is on a horizontal or vertical track
+		if self.getTrackNo % 2 == 0: 
+			# horizontal track
+			nextIntersect = self.nearestIntersect()[1]
+		else:
+			# vertical track
+			nextIntersect = self.nearestIntersect()[2]
+
+
+		v = PVA[1]
+		a = PVA[2]
+		if nextIntersect < PVA[0]:
+			# need to change this later
+			# figure out what happens when the intersection wraps around to the other side of the track
+			continue
+
+		# the normal case: intersection is in front of the car on the track (no wrapping around)
+		else:
+			d = nextIntersect - PVA[0]
+
+			t_enter = -v/a + sqrt( (v^2/a^2) + 2/a * (d + 0.5*(carLength + carWidth)))
+			t_exit = -v/a + sqrt( (v^2/a^2) + 2/a * (d + (carLength + carWidth)))
+
+
+		intersectionTimes = [t_enter, t_exit]
+		return intersectionTimes
+
 ##############################################################
 #                      Update Track                          #
 ##############################################################
@@ -182,7 +218,7 @@ class Car(Track):
 		self.updatePV()
 
 	# brake as quickly as possible
-	def brakeHard():
+	def hardBrake():
 		self.PVA[2] = maxBrake
 		self.updatePV()
 
