@@ -10,14 +10,15 @@ from tkinter import *
 import time
 import random
 
-firstCarIndex = 7
-overlaps = []
+
 
 class GUI():
 
+    firstCarIndex = 7
+    overlaps = []
     # Class constants
-    CAR_HEIGHT = 15
-    CAR_WIDTH = 10
+    CAR_HEIGHT = 10
+    CAR_WIDTH = 6
 
 
     # class guiCar():
@@ -141,27 +142,27 @@ class GUI():
 
 
     def checkCollision(self):
-        global firstCarIndex
-        global overlaps
+        # global firstCarIndex
+        # global overlaps
         for col in range(self.cols):
             coords = self.w.coords(self.cars[col])
             ov = self.w.find_overlapping(coords[0], coords[1], 
                                                coords[2], coords[3])
 
-            ov = [car for car in ov if car >= firstCarIndex]
+            ov = [car for car in ov if car >= GUI.firstCarIndex]
             if(len(ov) > 1):
                 for car in ov:
-                    if car not in overlaps:
-                        overlaps += ov
+                    if car not in GUI.overlaps:
+                        GUI.overlaps += ov
 
-        for car in range(firstCarIndex, firstCarIndex+len(self.cars)):
-            if car in overlaps:
+        for car in range(GUI.firstCarIndex, GUI.firstCarIndex+len(self.cars)):
+            if car in GUI.overlaps:
                 self.w.itemconfig(car, fill='red')
             else:
                 self.w.itemconfig(car, fill='blue')
        
         # Reset collision list
-        overlaps = []
+        GUI.overlaps = []
 
 
 
@@ -169,39 +170,39 @@ class GUI():
 # Test Script #
 ###############
 
-NUM_CARS = 6
-WINDOW_WIDTH = 400
-WINDOW_HEIGHT = 300
+# NUM_CARS = 6
+# WINDOW_WIDTH = 400
+# WINDOW_HEIGHT = 300
 
-carPos = [[0],[0],[0],[0],[0],[0]]
-def generateMoves(carPos):
+# carPos = [[0],[0],[0],[0],[0],[0]]
+# def generateMoves(carPos):
 
-    for i in range(NUM_CARS):
-        carPos[i][0] += (random.randint(1,4)+ i%2)
-        # print(carPos[i][0])
-        if(i < 3):
-            carPos[i][0] = carPos[i][0] % WINDOW_HEIGHT
-        else:
-            carPos[i][0] = carPos[i][0] % WINDOW_WIDTH
-        # print(carPos)
-    return carPos
+#     for i in range(NUM_CARS):
+#         carPos[i][0] += (random.randint(1,4)+ i%2)
+#         # print(carPos[i][0])
+#         if(i < 3):
+#             carPos[i][0] = carPos[i][0] % WINDOW_HEIGHT
+#         else:
+#             carPos[i][0] = carPos[i][0] % WINDOW_WIDTH
+#         # print(carPos)
+#     return carPos
 
 
 
-g = GUI(3,3,WINDOW_WIDTH,WINDOW_HEIGHT)
-while True:
-    if g.notQuit:
-        if g.startFlag:
-            carPos = generateMoves(carPos)
-            g.animate(carPos)
-            g.checkCollision()
+# g = GUI(3,3,WINDOW_WIDTH,WINDOW_HEIGHT)
+# while True:
+#     if g.notQuit:
+#         if g.startFlag:
+#             carPos = generateMoves(carPos)
+#             g.animate(carPos)
+#             g.checkCollision()
 
-        g.tk.update_idletasks()
-        g.tk.update()
-        time.sleep(0.02)
-    else:
-        g.tk.destroy()
-        break
-print("Closed GUI")
+#         g.tk.update_idletasks()
+#         g.tk.update()
+#         time.sleep(0.02)
+#     else:
+#         g.tk.destroy()
+#         break
+# print("Closed GUI")
 
-# g.tk.mainloop()
+# # g.tk.mainloop()

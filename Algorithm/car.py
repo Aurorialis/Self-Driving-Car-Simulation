@@ -1,5 +1,5 @@
 
-class Car(Track):
+class Car():
 	"""creates the car object"""
 
 	# Initalize a car
@@ -8,15 +8,17 @@ class Car(Track):
 		# initV = initial velocity of the car on the track
 		# initAccel = initial acceleration of the car on the track
 
-		# maximum acceleration of a car (both speeding up and braking)
-		maxAccel = 10
-		maxBrake = -10
+	# maximum acceleration of a car (both speeding up and braking)
+	maxAccel = 10
+	maxBrake = -10
 
-	def __init__(self, trackNumber, initPos, initV, initAccel, carLength, carWidth):
+	def __init__(self, trackNumber, initPos, initV, initAccel, carLength, carWidth, track, timeStep):
 		self.carWidth = carWidth # length of the car
 		self.carLength = carLength # width of the car
-		self.PVA = [initPos initV initAccel]
+		self.PVA = [initPos, initV, initAccel]
 		self.trackNumber = trackNumber
+		self.track = track
+		self.timeStep = timeStep
 
 	# returns the track number that the car is on
 	def getTrackNo(self):
@@ -48,20 +50,20 @@ class Car(Track):
 	def updatePV(self):
 
 		# Update postion using kinematics
-		newPos = self.getPos() + self.getV()*timeStep + 0.5*self.getAccel()*timeStep^2
+		newPos = self.getPos() + self.getV()*self.timeStep + 0.5*self.getAccel()*self.timeStep**2
 
 		# make sure that the car does not start moving backwards
 		if newPos < self.getPos():
 			newPos = self.getPos()
 		else:
-			continue
+			pass
 
 		# wrap around the track if car is about to run off of the track
 
-		if self.getTrackNo % 2 = 0: # even track, tracks runs horizontally
-			trackLength = getWidth()
+		if self.getTrackNo() % 2 == 0: # even track, tracks runs horizontally
+			trackLength = self.track.getWidth()
 		else: # odd track, track runs vertically
-			trackLength = getHeight()
+			trackLength = self.track.getHeight()
 
 		if newPos <= trackLength:
 			self.PVA[1] = newPos
@@ -69,19 +71,19 @@ class Car(Track):
 			self.PVA[1] = newPos - trackLength
 
 		# Update Velocity
-		newV = self.getV() + self.getAccel()*timeStep
+		newV = self.getV() + self.getAccel()*self.timeStep
 
 		# make sure car does not start moving backwards
 		if newV < 0:
 			newV = 0
 		else:
-			continue
+			pass
 
 		self.PVA[2] = newV
 
 
 	# move the car with constant velocity
-	def moveConstantV()
+	def moveConstantV(self):
 		self.setAccel(0)
 		self.updatePV()
 
@@ -89,7 +91,7 @@ class Car(Track):
 	# def moveConstantAccel():
 	# 	self.updatePV()
 
-	def speedUp():
+	def speedUp(self):
 		self.setAccel(3)
 		self.updatePV()
 		# # if car is already speeding up, increase acceleration
@@ -101,12 +103,12 @@ class Car(Track):
 		# # update position and velocity based on braking
 		# self.updatePV()
 
-	def lightSpeed():
+	def lightSpeed(self):
 		self.setAccel(maxAccel)
 		self.updatePV()
 
 	# slow the car down
-	def brake():
+	def brake(self):
 		self.setAccel(-3)
 		# # if car is already braking, increase braking amount
 		# if self.PVA[2] < 0:
@@ -118,7 +120,7 @@ class Car(Track):
 		# self.updatePV()
 
 	# brake as quickly as possible
-	def hardBrake():
+	def hardBrake(self):
 		self.setAccel(maxBrake)
 		self.updatePV()
 
