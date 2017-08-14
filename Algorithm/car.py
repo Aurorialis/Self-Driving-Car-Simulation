@@ -9,8 +9,8 @@ class Car():
 		# initAccel = initial acceleration of the car on the track
 
 	# maximum acceleration of a car (both speeding up and braking)
-	maxAccel = 10
-	maxBrake = -10
+	maxAccel = 1
+	maxBrake = -1
 
 	def __init__(self, trackNumber, initPos, initV, initAccel, carLength, carWidth, track, timeStep):
 		self.carWidth = carWidth # length of the car
@@ -66,9 +66,9 @@ class Car():
 			trackLength = self.track.getHeight()
 
 		if newPos <= trackLength:
-			self.PVA[1] = newPos
+			self.PVA[0] = newPos
 		else: 
-			self.PVA[1] = newPos - trackLength
+			self.PVA[0] = newPos - trackLength
 
 		# Update Velocity
 		newV = self.getV() + self.getAccel()*self.timeStep
@@ -79,7 +79,7 @@ class Car():
 		else:
 			pass
 
-		self.PVA[2] = newV
+		self.PVA[1] = newV
 
 
 	# move the car with constant velocity
@@ -92,7 +92,7 @@ class Car():
 	# 	self.updatePV()
 
 	def speedUp(self):
-		self.setAccel(3)
+		self.setAccel(0.3)
 		self.updatePV()
 		# # if car is already speeding up, increase acceleration
 		# if self.PVA[2] > 0:
@@ -109,7 +109,7 @@ class Car():
 
 	# slow the car down
 	def brake(self):
-		self.setAccel(-3)
+		self.setAccel(-0.3)
 		# # if car is already braking, increase braking amount
 		# if self.PVA[2] < 0:
 		# 	self.PVA[2] += 0.1*(self.PVA[2])

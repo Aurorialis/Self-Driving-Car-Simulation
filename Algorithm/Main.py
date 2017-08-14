@@ -13,7 +13,7 @@ import time
 #############################################################
 
 # INPUTS THAT CAN BE CHANGED
-v_term = 20 # terminal velocity
+v_term = 5 # terminal velocity
 t_panic = 0.5 # time for which intersection is going to happen too soon, and emergency brakes must be used
 
 rows = 4
@@ -37,13 +37,13 @@ allCars = []
 # initialize the vertical cars
 for i in range(cols):
 	oddCounter = (i*2)+1
-	currentCar = Car(oddCounter, 0, 0, 5, carLength, carWidth, track, timeStep) # each vertical car is on an odd numbered track
+	currentCar = Car(oddCounter, 0, 1, 0.5, carLength, carWidth, track, timeStep) # each vertical car is on an odd numbered track
 	allCars += [currentCar]
 
 # initialize the horizontal cars
 for i in range(rows):
 	evenCounter = i*2
-	currentCar = Car(evenCounter, 0, 0, 5, carLength, carWidth, track, timeStep) # each horizontal car is on an even numbered track
+	currentCar = Car(evenCounter, 0, 2, 0.5, carLength, carWidth, track, timeStep) # each horizontal car is on an even numbered track
 	allCars += [currentCar]
 
 
@@ -165,6 +165,8 @@ isRunning = True
 
 # Initialize GUI
 g = GUI(4,4,width,height)
+g.tk.update()
+time.sleep(5)
 
 ##############################################################
 #                     Run Algorithm                          #
@@ -182,18 +184,18 @@ while isRunning == True:
 
 	# initialize the car dictionary
 	carInformation = {}
-	carPs = []
+	carPVAs = []
 	print("Print car info")
 	for car in allCars:
-		info = [car.PVA, nearestIntersect(car),intersectionTimes(car)]
+		info = [car.PVA, nearestIntersect(car), intersectionTimes(car)]
 		carInformation[car] = info
-		carPs += [[info[0][0]]]
-	print(carPs)
+		carPVAs += [info[0]]
+	print(carPVAs)
 
 	##################
 	### Update GUI ###
 	##################
-	g.animate(carPs)
+	g.animate(carPVAs)
 	g.checkCollision()
 	g.tk.update_idletasks()
 	g.tk.update()
@@ -250,10 +252,12 @@ while isRunning == True:
 			# if either of the cars are moving at terminal velocity already
 			# then just move the cars at a constant velocity
 			if car1_v == v_term or car2_v == v_term:
+				print("Move at constant V")
 				car1.moveConstantV()
 				car2.moveConstantV()
 			# otherwise speed up both cars
 			else:
+				print("Speed up car")
 				car1.speedUp()
 				car2.speedUp()
 
@@ -275,6 +279,7 @@ while isRunning == True:
 
 					if car1_enter <= t_panic:
 						# panic mode
+						print("Car1 light Speed, Car2 hard brake")
 						car1.lightSpeed()
 						car2.hardBrake()
 					else:
