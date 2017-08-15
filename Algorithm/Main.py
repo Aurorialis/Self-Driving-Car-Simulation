@@ -14,7 +14,7 @@ import time
 
 # INPUTS THAT CAN BE CHANGED
 v_term = 5 # terminal velocity
-t_panic = 0.5 # time for which intersection is going to happen too soon, and emergency brakes must be used
+t_panic = 4 # time for which intersection is going to happen too soon, and emergency brakes must be used
 
 rows = 4
 cols = 4
@@ -434,6 +434,33 @@ while isRunning == True:
 							# slow down car to be slowed
 							carSlow.brake()
 							carFast.moveConstantV()
+
+
+	##############################################
+	# accelerate the cars that aren't about to intersect with anyone
+	# (aren't in the "mightCrash" list)
+
+	crashAlgCar =[] # car that goes through the crash-avoidance algorithm above
+	for carPair in mightCrash:
+		crashAlgCar += [carPair[0], carPair[1]]
+
+	lonelyCars = [] # car that doesn't need to go through crash-avoidance algorithm b/c isn't going to crash 
+	for car in allCars:
+		# if the car might crash, then it already went through the correct algorithm
+		if car in crashAlgCar:
+			continue
+		# if the car doesn't have to worry about crashing, add it to the list
+		else:
+			lonelyCars += [car]
+
+	# loop through all of the lonely cars and speed them up
+	for lonelyCar in lonelyCars:
+		# if not moving at terminal velocity, speed up
+		if lonelyCar.getV() <= v_term:
+			lonelyCar.speedUp()
+		# if moving at terminal velocity, just keep moving with same velocity
+		else:
+			lonelyCar.moveConstantV()
 
 
 
