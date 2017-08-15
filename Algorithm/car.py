@@ -1,8 +1,8 @@
 # maximum acceleration of a car (both speeding up and braking)
-normalAccel = 3
-normalBrake = -3
-maxAccel = 5
-maxBrake = -5
+normalAccel = 0.5
+normalBrake = -0.5
+maxAccel = 1
+maxBrake = -1
 
 class Car():
 	"""creates the car object"""
@@ -87,7 +87,7 @@ class Car():
 
 	# move the car with constant velocity - not zero so that we don't divide by 0
 	def moveConstantV(self):
-		self.setAccel(0.001)
+		self.setAccel(0.000001)
 		self.updatePV()
 
 	# # move the car with constant acceleration
