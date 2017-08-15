@@ -13,7 +13,7 @@ import time
 #############################################################
 
 # INPUTS THAT CAN BE CHANGED
-v_term = 20 # terminal velocity
+v_term = 10 # terminal velocity
 t_panic = 4 # time for which intersection is going to happen too soon, and emergency brakes must be used
 
 rows = 4
@@ -196,7 +196,7 @@ while isRunning == True:
 		info = [car.PVA, nearestIntersect(car), intersectionTimes(car)]
 		carInformation[car] = info
 		carPVAs += [info[0]]
-	#print(carPVAs)
+	print(carPVAs)
 
 	##################
 	### Update GUI ###
@@ -257,7 +257,7 @@ while isRunning == True:
 		if car1_enter < car2_exit or car2_enter < car1_exit:
 			# if either of the cars are moving at terminal velocity already
 			# then just move the cars at a constant velocity
-			if car1_v == v_term or car2_v == v_term:
+			if car1_v >= v_term or car2_v >= v_term:
 				#print("Move at constant V")
 				car1.moveConstantV()
 				car2.moveConstantV()
@@ -281,7 +281,7 @@ while isRunning == True:
 			if car1_enter < car2_enter:
 
 				# if car1 is not moving at terminal velocity
-				if car1_v != v_term:
+				if car1_v < v_term:
 
 					if car1_enter <= t_panic:
 						# panic mode
@@ -310,7 +310,7 @@ while isRunning == True:
 			elif car2_enter < car1_enter:
 
 				# if car2 is not moving at terminal velocity
-				if car2_v != v_term:
+				if car2_v < v_term:
 
 					if car2_enter <= t_panic:
 						# panic mode
@@ -416,7 +416,7 @@ while isRunning == True:
 							carFast = car
 
 					# if they are not moving at terminal velocity
-					if car1_v != v_term:
+					if car1_v < v_term:
 
 						if car1_enter <= t_panic:
 							# panic mode
