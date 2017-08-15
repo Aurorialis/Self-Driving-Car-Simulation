@@ -152,8 +152,8 @@ for i in range(rows):
 			d = nextIntersect - car.PVA[0]
 
 		# calculate intersections times based on kinematics
-		t_enter = -v/a + sqrt( (v**2/a**2) + 2/a * (d - 0.5*(carLength + carWidth)))
-		t_exit = -v/a + sqrt( (v**2/a**2) + 2/a * (d + 0.5*(carLength + carWidth)))
+		t_enter = -v/a + sqrt( (v**2/a**2) + 2/a * (d + 0.5*(carLength + carWidth)))
+		t_exit = -v/a + sqrt( (v**2/a**2) + 2/a * (d + (carLength + 0.5*carWidth)))
 
 		intersectionTimes = [t_enter, t_exit]
 		return intersectionTimes
@@ -464,6 +464,8 @@ while isRunning == True:
 		# if not moving at terminal velocity, speed up
 		if lonelyCar.getV() < v_term:
 			lonelyCar.speedUp()
+		elif lonelyCar.getV() > v_term:
+			lonelyCar.brake()
 		# if moving at terminal velocity, just keep moving with same velocity
 		else:
 			lonelyCar.moveConstantV()
