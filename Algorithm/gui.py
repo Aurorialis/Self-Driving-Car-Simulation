@@ -170,39 +170,39 @@ class GUI():
 # Test Script #
 ###############
 
-NUM_CARS = 6
-WINDOW_WIDTH = 400
-WINDOW_HEIGHT = 300
+# NUM_CARS = 6
+# WINDOW_WIDTH = 400
+# WINDOW_HEIGHT = 300
 
-carPos = [[0],[0],[0],[0],[0],[0]]
-def generateMoves(carPos):
+# carPos = [[0],[0],[0],[0],[0],[0]]
+# def generateMoves(carPos):
 
-    for i in range(NUM_CARS):
-        carPos[i][0] += (random.randint(1,4)+ i%2)
-        # print(carPos[i][0])
-        if(i < 3):
-            carPos[i][0] = carPos[i][0] % WINDOW_HEIGHT
-        else:
-            carPos[i][0] = carPos[i][0] % WINDOW_WIDTH
-        # print(carPos)
-    return carPos
+#     for i in range(NUM_CARS):
+#         carPos[i][0] += (random.randint(1,4)+ i%2)
+#         # print(carPos[i][0])
+#         if(i < 3):
+#             carPos[i][0] = carPos[i][0] % WINDOW_HEIGHT
+#         else:
+#             carPos[i][0] = carPos[i][0] % WINDOW_WIDTH
+#         # print(carPos)
+#     return carPos
 
 
 
-g = GUI(3,3,WINDOW_WIDTH,WINDOW_HEIGHT)
-while True:
-    if g.notQuit:
-        if g.startFlag:
-            carPos = generateMoves(carPos)
-            g.animate(carPos)
-            g.checkCollision()
+# g = GUI(3,3,WINDOW_WIDTH,WINDOW_HEIGHT)
+# while True:
+#     if g.notQuit:
+#         if g.startFlag:
+#             carPos = generateMoves(carPos)
+#             g.animate(carPos)
+#             g.checkCollision()
 
-        g.tk.update_idletasks()
-        g.tk.update()
-        time.sleep(0.02)
-    else:
-        g.tk.destroy()
-        break
-print("Closed GUI")
+#         g.tk.update_idletasks()
+#         g.tk.update()
+#         time.sleep(0.02)
+#     else:
+#         g.tk.destroy()
+#         break
+# print("Closed GUI")
 
 # g.tk.mainloop()
