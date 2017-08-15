@@ -462,7 +462,7 @@ while isRunning == True:
 	# loop through all of the lonely cars and speed them up
 	for lonelyCar in lonelyCars:
 		# if not moving at terminal velocity, speed up
-		if lonelyCar.getV() <= v_term:
+		if lonelyCar.getV() < v_term:
 			lonelyCar.speedUp()
 		# if moving at terminal velocity, just keep moving with same velocity
 		else:

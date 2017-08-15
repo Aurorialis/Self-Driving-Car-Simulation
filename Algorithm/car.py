@@ -1,8 +1,8 @@
 # maximum acceleration of a car (both speeding up and braking)
-normalAccel = 3
-normalBrake = -3
-maxAccel = 5
-maxBrake = -5
+normalAccel = 1
+normalBrake = -1
+maxAccel = 2
+maxBrake = -2
 
 class Car():
 	"""creates the car object"""
