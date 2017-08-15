@@ -1,3 +1,8 @@
+# maximum acceleration of a car (both speeding up and braking)
+normalAccel = 3
+normalBrake = -3
+maxAccel = 10
+maxBrake = -10
 
 class Car():
 	"""creates the car object"""
@@ -8,11 +13,7 @@ class Car():
 		# initV = initial velocity of the car on the track
 		# initAccel = initial acceleration of the car on the track
 
-	# maximum acceleration of a car (both speeding up and braking)
-	normalAccel = 3
-	normalBrake = -3
-	maxAccel = 10
-	maxBrake = -10
+
 
 	def __init__(self, trackNumber, initPos, initV, initAccel, carLength, carWidth, track, timeStep):
 		self.carWidth = carWidth # length of the car
