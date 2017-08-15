@@ -179,6 +179,12 @@ while isRunning == True:
 		g.tk.destroy()
 		break
 
+	# if it hasn't started, then update gui and wait for start flag
+	if not g.startFlag:
+		g.tk.update_idletasks()
+		g.tk.update()
+		time.sleep(0.02)
+		continue
 
 	# Create dictionary that maps each car to its PVA, nearest intersection coordinate, and intersection times
 
