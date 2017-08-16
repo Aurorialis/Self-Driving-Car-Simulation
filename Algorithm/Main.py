@@ -111,7 +111,7 @@ def nearestIntersect(car):
 			lastLane = spacing * track.getRows()
 
 		# eliminate intersections on a different row/column
-		if whereTrack != pixel:
+		if whereTrack < pixel+50 and whereTrack > pixel - 50:
 			pass
 
 		# find the nearest intersection
@@ -142,7 +142,8 @@ def nearestIntersect(car):
 				else:
 					print("not wrapped around and passed")
 					pass
-	print(nearestIntersect)
+
+	# print(nearestIntersect)
 	return nearestIntersect
 
 
@@ -234,9 +235,10 @@ while isRunning == True:
 	carPVAs = []
 	#print("Print car info")
 	for car in allCars:
-		info = [car.PVA, nearestIntersect(car), intersectionTimes(car)]
+		info = [car.PVA, nearestIntersect(car), intersectionTimes(car), car.getTrackNo()]
 		carInformation[car] = info
 		carPVAs += [info[0]]
+		print(info)
 		#print(info[0][1])
 	#print(carPVAs)
 
