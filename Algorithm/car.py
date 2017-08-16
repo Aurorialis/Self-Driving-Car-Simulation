@@ -1,6 +1,6 @@
 # maximum acceleration of a car (both speeding up and braking)
 normalAccel = 100
-normalBrake = -50
+normalBrake = -100
 maxAccel = 200
 maxBrake = -200
 

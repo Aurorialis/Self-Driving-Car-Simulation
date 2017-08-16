@@ -13,8 +13,8 @@ import time
 #############################################################
 
 # INPUTS THAT CAN BE CHANGED
-v_term = 350 # terminal velocity
-t_panic = 0.1 # time for which intersection is going to happen too soon, and emergency brakes must be used
+v_term = 1000 # terminal velocity
+t_panic = 0.2 # time for which intersection is going to happen too soon, and emergency brakes must be used
 
 rows = 3
 cols = 3
@@ -63,7 +63,7 @@ def nearestIntersect(car):
 	if car.getTrackNo() % 2 == 0: # horizontal track
 		# get exact row pixel number
 		rowNum = car.getTrackNo()/2
-		pixel = rowNum * track.getRowSpacing() # row number of the track
+		pixel = (rowNum +1) * track.getRowSpacing() # row number of the track
 		currentMin = track.getWidth()
 
 		trackType = 'horizontal'
@@ -71,7 +71,7 @@ def nearestIntersect(car):
 	else: # vertical track
 		# get exact col pixel number
 		colNum = floor(car.getTrackNo()/2)
-		pixel = colNum * track.getColSpacing() # column number of the track
+		pixel = (colNum + 1) * track.getColSpacing() # column number of the track
 		currentMin = track.getHeight()
 
 		trackType = 'vertical'
@@ -111,7 +111,7 @@ def nearestIntersect(car):
 			lastLane = spacing * track.getRows()
 
 		# eliminate intersections on a different row/column
-		if whereTrack < pixel+50 and whereTrack > pixel - 50:
+		if whereTrack > pixel+50 or whereTrack < pixel - 50:
 			pass
 
 		# find the nearest intersection
@@ -120,27 +120,27 @@ def nearestIntersect(car):
 			if carPosition >= lastLane:
 				newMin = whereOnTrack
 				if newMin < currentMin:
-					print("wrapped around")
+					#print("wrapped around")
 					currentMin = newMin
 					nearestIntersect = i 
 				else:
-					print("wrapped around and passed")
+					#print("wrapped around and passed")
 					pass
 
 			# eliminate all intersections that are behind the car
 			elif whereOnTrack <= carPosition and carPosition < lastLane :
-				print("not defining an intersection")
+				#print("not defining an intersection")
 				pass
 
 			# next intersection does not wrap around to the other side
 			else:
 				newMin = whereOnTrack - carPosition 
 				if newMin < currentMin:
-					print("not wrapped around")
+					#print("not wrapped around")
 					currentMin = newMin
 					nearestIntersect = i 
 				else:
-					print("not wrapped around and passed")
+					#print("not wrapped around and passed")
 					pass
 
 	# print(nearestIntersect)
@@ -238,7 +238,7 @@ while isRunning == True:
 		info = [car.PVA, nearestIntersect(car), intersectionTimes(car), car.getTrackNo()]
 		carInformation[car] = info
 		carPVAs += [info[0]]
-		print(info)
+		#print(info)
 		#print(info[0][1])
 	#print(carPVAs)
 
