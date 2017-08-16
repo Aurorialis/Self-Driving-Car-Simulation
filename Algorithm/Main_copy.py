@@ -13,11 +13,11 @@ import time
 #############################################################
 
 # INPUTS THAT CAN BE CHANGED
-v_term = 350 # terminal velocity
-t_panic = 0.04 # time for which intersection is going to happen too soon, and emergency brakes must be used
+v_term = 150 # terminal velocity
+t_panic = 5 # time for which intersection is going to happen too soon, and emergency brakes must be used
 
-rows = 3
-cols = 3
+rows = 4
+cols = 4
 width = 640
 height = 480
 timeStep = 0.01
@@ -51,147 +51,124 @@ for i in range(rows):
 #        Location and Time Calculations for Car              #
 ##############################################################
 
-# Determines the next upcoming intersection
-def nearestIntersect(car):
+	# Determines the next upcoming intersection
+	def nearestIntersect(car):
 
-	# offset location to account for length of the entire car relative to position calculations
-	offset = carLength + 0/5*carWidth
+		intersections = track.getIntersections()
+		nearestIntersect = (-1,-1)
 
-	intersections = track.getIntersections()
-	nearestIntersect = (-1,-1)
+		if car.getTrackNo() % 2 == 0: # horizontal track
+			# get exact row pixel number
+			rowNum = car.getTrackNo()/2
+			pixel = rowNum * track.getRowSpacing() # row number of the track
+			currentMin = track.getWidth()
 
-	if car.getTrackNo() % 2 == 0: # horizontal track
-		# get exact row pixel number
-		rowNum = car.getTrackNo()/2
-		pixel = rowNum * track.getRowSpacing() # row number of the track
-		currentMin = track.getWidth()
+			trackType = 'horizontal'
 
-		trackType = 'horizontal'
+		else: # vertical track
+			# get exact col pixel number
+			colNum = floor(car.getTrackNo()/2)
+			pixel = colNum * track.getColSpacing() # column number of the track
+			currentMin = track.getHeight()
 
-	else: # vertical track
-		# get exact col pixel number
-		colNum = floor(car.getTrackNo()/2)
-		pixel = colNum * track.getColSpacing() # column number of the track
-		currentMin = track.getHeight()
+			trackType = 'vertical'
 
-		trackType = 'vertical'
+		# loop through list of list of intersections, and find next upcoming intersection			
+		for i in intersections:
+			if trackType == 'horizontal':
+				whereTrack = i[1] # row value of the horizontal track
+				whereOnTrack = i[0] # location of vertical intersection with the track
+				spacing = track.getColSpacing()
+				lastLane = spacing * track.getCols()
 
+			else:
+				whereTrack = i[0] # col value of the vertical track
+				whereOnTrack = i[1] # location of horizontal intersection with the track
+				spacing = track.getRowSpacing()
+				lastLane = spacing * track.getRows()
 
-
-	# offset location of car so that nearestIntersect doesn't update until
-	# the very end of the car is past the previous/current intersection
-	carPosition = car.getPos() - offset
-	# make sure that the car position is not negative, and fix accordingly (previous position wraps around)
-	if carPosition < 0:
-		offsetRemainder = offset - car.getPos()
-		# horizontal track
-		if trackType == 'horizontal':
-			carPosition = track.getWidth() - offsetRemainder
-		# vertical track
-		else:
-			carPosition = track.getHeight() - offsetRemainder
-	else:
-		carPosition = carPosition
-
-
-
-	# loop through list of list of intersections, and find next upcoming intersection			
-	for i in intersections:
-		if trackType == 'horizontal':
-			whereTrack = i[1] # row value of the horizontal track
-			whereOnTrack = i[0] # location of vertical intersection with the track
-			spacing = track.getColSpacing()
-			lastLane = spacing * track.getCols()
-
-		else:
-			whereTrack = i[0] # col value of the vertical track
-			whereOnTrack = i[1] # location of horizontal intersection with the track
-			spacing = track.getRowSpacing()
-			lastLane = spacing * track.getRows()
-
-		# eliminate intersections on a different row/column
-		if whereTrack != pixel:
-			continue
-
-		# find the nearest intersection
-		else:
-			# check if next intersection is wrapped around on the other side of the track
-			if carPosition >= lastLane:
-				newMin = whereOnTrack
-				if newMin < currentMin:
-					currentMin = newMin
-					nearestIntersect = i 
-				else:
-					continue
-
-			# eliminate all intersections that are behind the car
-			elif whereOnTrack <= carPosition and carPosition < lastLane :
+			# eliminate intersections on a different row/column
+			if whereTrack != pixel:
 				continue
 
-			# next intersection does not wrap around to the other side
+			# find the nearest intersection
 			else:
-				newMin = whereOnTrack - carPosition 
-				if newMin < currentMin:
-					currentMin = newMin
-					nearestIntersect = i 
-				else:
+				# check if next intersection is wrapped around on the other side of the track
+				if car.getPos() >= lastLane:
+					newMin = whereOnTrack
+					if newMin < currentMin:
+						currentMin = newMin
+						nearestIntersect = i 
+					else:
+						continue
+
+				# eliminate all intersections that are behind the car
+				elif whereOnTrack <= car.getPos() and car.getPos() < lastLane :
 					continue
 
-	return nearestIntersect
+				# next intersection does not wrap around to the other side
+				else:
+					newMin = whereOnTrack - car.getPos() 
+					if newMin < currentMin:
+						currentMin = newMin
+						nearestIntersect = i 
+					else:
+						continue
+
+		return nearestIntersect
 
 
-# Get the time in which the car will start crossing the intersection, and will leave the intersection
-# returns a list of size two
-# the first item is when the leading edge of the car enters the intersection
-# the second item is when the lagging edge of the car leaves the intersection
-def intersectionTimes(car):
+	# Get the time in which the car will start crossing the intersection, and will leave the intersection
+	# returns a list of size two
+	# the first item is when the leading edge of the car enters the intersection
+	# the second item is when the lagging edge of the car leaves the intersection
+	def intersectionTimes(car):
 
-	v = car.PVA[1]
-	a = car.PVA[2]
+		v = car.PVA[1]
+		a = car.PVA[2]
 
-	# get relevant location of next intersection (single value instead of a coordinate)
-	# depends on whether car is on a horizontal or vertical track
-	if car.getTrackNo() % 2 == 0: 
-		# horizontal track
-		nextIntersect = nearestIntersect(car)[0]
-	else:
-		# vertical track
-		nextIntersect = nearestIntersect(car)[1]
-
-	# if the next intersection wraps around to the other side of the track, make sure to 
-	# add the position of the next intersection to the remaining distance on the track
-	# before the car wraps around
-	if nextIntersect < car.PVA[0]:
+		# get relevant location of next intersection (single value instead of a coordinate)
+		# depends on whether car is on a horizontal or vertical track
 		if car.getTrackNo() % 2 == 0: 
 			# horizontal track
-			d = nextIntersect + track.getWidth()
+			nextIntersect = nearestIntersect(car)[0]
 		else:
-			# vertical trac
-			d = nextIntersect + track.getHeight()
+			# vertical track
+			nextIntersect = nearestIntersect(car)[1]
 
-	# the normal case: intersection is in front of the car on the track (no wrapping around)
-	else:
-		d = nextIntersect - car.PVA[0]
+		# if the next intersection wraps around to the other side of the track, make sure to 
+		# add the position of the next intersection to the remaining distance on the track
+		# before the car wraps around
+		if nextIntersect < car.PVA[0]:
+			if car.getTrackNo() % 2 == 0: 
+				# horizontal track
+				d = nextIntersect + track.getWidth()
+			else:
+				# vertical trac
+				d = nextIntersect + track.getHeight()
 
-	#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! figure out what the hell is going on here
-	# calculate intersections times based on kinematics
-	# if the car is accelerating backwards (so that kinematics thinks car will move backwards)
-	if a < 0 and v > sqrt( abs(a)*(2*d+carWidth)) and v < sqrt( abs(a)*(2*d + 2*carLength + carWidth)):
-		# set intersection time to be infinity
-		t_enter = -v/a + sqrt( (v**2/a**2) + 2/a * (d + 0.5*(carWidth)))
-		t_exit = 2**10
-	elif a < 0 and v < sqrt( abs(a)*(2*d+carWidth)):
-		print("Car will move backwards- braking hard")
-		t_enter = 2**10
-		t_exit = 2**10
-	else:
-		# otherwise do normal kinematics
-		t_enter = -v/a + sqrt( (v**2/a**2) + 2/a * (d + 0.5*(carWidth)))
-		t_exit = -v/a + sqrt( (v**2/a**2) + 2/a * (d + (carLength + 0.5*carWidth)))
+		# the normal case: intersection is in front of the car on the track (no wrapping around)
+		else:
+			d = nextIntersect - car.PVA[0]
 
-	intersectionTimes = [t_enter, t_exit]
-	#print(intersectionTimes)
-	return intersectionTimes
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! figure out what the hell is going on here
+		# calculate intersections times based on kinematics
+		# if the car is accelerating backwards (so that kinematics thinks car will move backwards)
+		if a < 0 and v > sqrt( abs(a)*(2*d+carWidth)) and v < sqrt( abs(a)*(2*d + 2*carLength + carWidth)):
+			# set intersection time to be infinity
+			t_enter = -v/a + sqrt( (v**2/a**2) + 2/a * (d + 0.5*(carWidth)))
+			t_exit = 2**10
+		elif a < 0 and v < sqrt( abs(a)*(2*d+carWidth)):
+			print("Car will move backwards- braking hard")
+			t_enter = 2**10
+			t_exit = 2**10
+		else:
+			# otherwise do normal kinematics
+			t_enter = -v/a + sqrt( (v**2/a**2) + 2/a * (d + 0.5*(carWidth)))
+			t_exit = -v/a + sqrt( (v**2/a**2) + 2/a * (d + (carLength + 0.5*carWidth)))
+
+		intersectionTimes = [t_enter, t_exit]
+		return intersectionTimes
 
 
 ############################################################
@@ -199,7 +176,7 @@ def intersectionTimes(car):
 isRunning = True
 
 # Initialize GUI
-g = GUI(rows,cols,width,height)
+g = GUI(4,4,width,height)
 g.tk.update()
 time.sleep(5)
 
@@ -231,7 +208,6 @@ while isRunning == True:
 		info = [car.PVA, nearestIntersect(car), intersectionTimes(car)]
 		carInformation[car] = info
 		carPVAs += [info[0]]
-		print(info[0][1])
 	#print(carPVAs)
 
 	##################
@@ -300,9 +276,34 @@ while isRunning == True:
 					carNoCollision.moveConstantV()
 				else:
 					carNoCollision.speedUp()
+			
+			# if car1_v = v_term or car2_v = v_term:
+			# 	#print("Move at constant V")
+			# 	car1.moveConstantV()
+			# 	car2.moveConstantV()
+
+			# # car1 is moving faster than terminal velocity and car2 moving at terminal velocity
+			# elif car1_v > v_term and car2_v = v_term:
+			# 	car1.brake()
+			# 	car2.moveConstantV()
+
+			# # car1 and car2 moving faster than terminal velocity
+			# elif car1_v > v_term and car2_v > v_term:
+			# 	car1.brake()
+			# 	car2.brake()
+
+			# elif car1_v > v_term and car2_v < v_term:
+			# 	car1.brake()
+			# 	car2.speedUp()
+
+			# # otherwise speed up both cars
+			# else:
+			# 	#print("Speed up car")
+			# 	car1.speedUp()
+			# 	car2.speedUp()
 
 #############################################################################
-		# COLLISION IS GOING TO HAPPEN IN THE FRONT HALF OF THE Car
+		# COLLISION IS GOING TO HAPPEN 
 		# BEGIN ACTUAL PART OF ALGORITHM!!!
 
 		else:
@@ -488,7 +489,7 @@ while isRunning == True:
 	for car in allCars:
 		# if the car might crash, then it already went through the correct algorithm
 		if car in crashAlgCar:
-			pass
+			continue
 		# if the car doesn't have to worry about crashing, add it to the list
 		else:
 			lonelyCars += [car]

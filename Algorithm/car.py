@@ -1,8 +1,8 @@
 # maximum acceleration of a car (both speeding up and braking)
-normalAccel = 0.5
-normalBrake = -0.5
-maxAccel = 1
-maxBrake = -1
+normalAccel = 100
+normalBrake = -50
+maxAccel = 200
+maxBrake = -200
 
 class Car():
 	"""creates the car object"""
@@ -15,13 +15,14 @@ class Car():
 
 
 
-	def __init__(self, trackNumber, initPos, initV, initAccel, carLength, carWidth, track, timeStep):
+	def __init__(self, trackNumber, initPos, initV, initAccel, carLength, carWidth, track, timeStep, v_term):
 		self.carWidth = carWidth # length of the car
 		self.carLength = carLength # width of the car
 		self.PVA = [initPos, initV, initAccel]
 		self.trackNumber = trackNumber
 		self.track = track
 		self.timeStep = timeStep
+		self.v_term = v_term
 
 	# returns the track number that the car is on
 	def getTrackNo(self):
@@ -79,8 +80,10 @@ class Car():
 		# make sure car does not start moving backwards
 		if newV < 0:
 			newV = 0
+		elif newV > self.v_term:
+			newV = self.v_term
 		else:
-			pass
+			newV = newV
 
 		self.PVA[1] = newV
 
