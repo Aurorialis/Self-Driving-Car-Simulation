@@ -14,15 +14,15 @@ import time
 
 # INPUTS THAT CAN BE CHANGED
 v_term = 350 # terminal velocity
-t_panic = 0.04 # time for which intersection is going to happen too soon, and emergency brakes must be used
+t_panic = 0.1 # time for which intersection is going to happen too soon, and emergency brakes must be used
 
 rows = 3
 cols = 3
 width = 640
 height = 480
 timeStep = 0.01
-carLength = 10
-carWidth = 6
+carLength = 20
+carWidth = 12
 
 # create the track
 track = Track(rows, cols, width, height, timeStep)
@@ -81,6 +81,7 @@ def nearestIntersect(car):
 	# offset location of car so that nearestIntersect doesn't update until
 	# the very end of the car is past the previous/current intersection
 	carPosition = car.getPos() - offset
+	#carPosition = car.getPos()
 	# make sure that the car position is not negative, and fix accordingly (previous position wraps around)
 	if carPosition < 0:
 		offsetRemainder = offset - car.getPos()
@@ -111,7 +112,7 @@ def nearestIntersect(car):
 
 		# eliminate intersections on a different row/column
 		if whereTrack != pixel:
-			continue
+			pass
 
 		# find the nearest intersection
 		else:
@@ -119,24 +120,29 @@ def nearestIntersect(car):
 			if carPosition >= lastLane:
 				newMin = whereOnTrack
 				if newMin < currentMin:
+					print("wrapped around")
 					currentMin = newMin
 					nearestIntersect = i 
 				else:
-					continue
+					print("wrapped around and passed")
+					pass
 
 			# eliminate all intersections that are behind the car
 			elif whereOnTrack <= carPosition and carPosition < lastLane :
-				continue
+				print("not defining an intersection")
+				pass
 
 			# next intersection does not wrap around to the other side
 			else:
 				newMin = whereOnTrack - carPosition 
 				if newMin < currentMin:
+					print("not wrapped around")
 					currentMin = newMin
 					nearestIntersect = i 
 				else:
-					continue
-
+					print("not wrapped around and passed")
+					pass
+	print(nearestIntersect)
 	return nearestIntersect
 
 
@@ -231,7 +237,7 @@ while isRunning == True:
 		info = [car.PVA, nearestIntersect(car), intersectionTimes(car)]
 		carInformation[car] = info
 		carPVAs += [info[0]]
-		print(info[0][1])
+		#print(info[0][1])
 	#print(carPVAs)
 
 	##################
@@ -498,8 +504,6 @@ while isRunning == True:
 		# if not moving at terminal velocity, speed up
 		if lonelyCar.getV() < v_term:
 			lonelyCar.speedUp()
-		elif lonelyCar.getV() > v_term:
-			lonelyCar.brake()
 		# if moving at terminal velocity, just keep moving with same velocity
 		else:
 			lonelyCar.moveConstantV()

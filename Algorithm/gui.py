@@ -17,8 +17,8 @@ class GUI():
     firstCarIndex = 7
     overlaps = []
     # Class constants
-    CAR_LENGTH = 10
-    CAR_WIDTH = 6
+    CAR_LENGTH = 20
+    CAR_WIDTH = 12
 
 
     # class guiCar():
@@ -158,7 +158,7 @@ class GUI():
         for car in range(GUI.firstCarIndex, GUI.firstCarIndex+len(self.cars)):
             if car in GUI.overlaps:
                 self.w.itemconfig(car, fill='red')
-                # print("COLLISION!!")
+                print("COLLISION!!")
             else:
                 self.w.itemconfig(car, fill='blue')
        
