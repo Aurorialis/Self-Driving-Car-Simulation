@@ -1,8 +1,8 @@
 # maximum acceleration of a car (both speeding up and braking)
 normalAccel = 100
 normalBrake = -100
-maxAccel = 200
-maxBrake = -200
+maxAccel = 2000
+maxBrake = -2000
 
 class Car():
 	"""creates the car object"""
@@ -90,6 +90,7 @@ class Car():
 
 	# move the car with constant velocity - not zero so that we don't divide by 0
 	def moveConstantV(self):
+		#print("constant V - car, %d" %self.trackNumber)
 		self.setAccel(0.000001)
 		self.updatePV()
 
@@ -98,6 +99,7 @@ class Car():
 	# 	self.updatePV()
 
 	def speedUp(self):
+		#print("speed up - car, %d" %self.trackNumber)
 		self.setAccel(normalAccel)
 		self.updatePV()
 		# # if car is already speeding up, increase acceleration
@@ -110,11 +112,13 @@ class Car():
 		# self.updatePV()
 
 	def lightSpeed(self):
+		#print("LIGHT SPEED - car, %d" %self.trackNumber)
 		self.setAccel(maxAccel)
 		self.updatePV()
 
 	# slow the car down
 	def brake(self):
+		#print("brake - car, %d" %self.trackNumber)
 		self.setAccel(normalBrake)
 		# # if car is already braking, increase braking amount
 		# if self.PVA[2] < 0:
@@ -127,6 +131,7 @@ class Car():
 
 	# brake as quickly as possible
 	def hardBrake(self):
+		#print("HARD BRAKE- car, %d" %self.trackNumber)
 		self.setAccel(maxBrake)
 		self.updatePV()
 

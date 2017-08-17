@@ -75,15 +75,15 @@ class GUI():
         for i in range(cols):
             self.carPos[i] = 0
             self.cars[i] = self.w.create_rectangle(
-                                (i+1)*colSpacing-GUI.CAR_WIDTH/2, self.carPos[i]-GUI.CAR_LENGTH+GUI.CAR_WIDTH,
-                                (i+1)*colSpacing+GUI.CAR_WIDTH/2, self.carPos[i]+GUI.CAR_WIDTH,
+                                (i+1)*colSpacing-GUI.CAR_WIDTH/2, self.carPos[i]-GUI.CAR_LENGTH-GUI.CAR_WIDTH,
+                                (i+1)*colSpacing+GUI.CAR_WIDTH/2, self.carPos[i]-GUI.CAR_WIDTH,
                                 fill='blue')
 
         for i in range(rows):
             self.carPos[i+cols] = 0
             self.cars[i+cols] = self.w.create_rectangle(
-                                self.carPos[i+cols]-GUI.CAR_LENGTH+GUI.CAR_WIDTH, (i+1)*rowSpacing-GUI.CAR_WIDTH/2,
-                                self.carPos[i+cols]+GUI.CAR_WIDTH, (i+1)*rowSpacing+GUI.CAR_WIDTH/2,
+                                self.carPos[i+cols]-GUI.CAR_LENGTH-GUI.CAR_WIDTH, (i+1)*rowSpacing-GUI.CAR_WIDTH/2,
+                                self.carPos[i+cols]-GUI.CAR_WIDTH, (i+1)*rowSpacing+GUI.CAR_WIDTH/2,
                                 fill='blue')
 
         # Show GUI
@@ -158,7 +158,7 @@ class GUI():
         for car in range(GUI.firstCarIndex, GUI.firstCarIndex+len(self.cars)):
             if car in GUI.overlaps:
                 self.w.itemconfig(car, fill='red')
-                print("COLLISION!!")
+                #print("COLLISION!!")
             else:
                 self.w.itemconfig(car, fill='blue')
        

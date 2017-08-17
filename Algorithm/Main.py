@@ -1,5 +1,6 @@
 
 from random import choice
+from random import randint
 
 from gui import GUI
 from track import Track
@@ -14,7 +15,7 @@ import time
 
 # INPUTS THAT CAN BE CHANGED
 v_term = 1000 # terminal velocity
-t_panic = 0.2 # time for which intersection is going to happen too soon, and emergency brakes must be used
+t_panic = 1 # time for which intersection is going to happen too soon, and emergency brakes must be used
 
 rows = 3
 cols = 3
@@ -37,13 +38,13 @@ allCars = []
 # initialize the vertical cars
 for i in range(cols):
 	oddCounter = (i*2)+1
-	currentCar = Car(oddCounter, 0, 15, 10, carLength, carWidth, track, timeStep, v_term) # each vertical car is on an odd numbered track
+	currentCar = Car(oddCounter, randint(0,height), 200, 100, carLength, carWidth, track, timeStep, v_term) # each vertical car is on an odd numbered track
 	allCars += [currentCar]
 
 # initialize the horizontal cars
 for i in range(rows):
 	evenCounter = i*2
-	currentCar = Car(evenCounter, 0, 20, 10, carLength, carWidth, track, timeStep, v_term) # each horizontal car is on an even numbered track
+	currentCar = Car(evenCounter, randint(0,width), 150, 150, carLength, carWidth, track, timeStep, v_term) # each horizontal car is on an even numbered track
 	allCars += [currentCar]
 
 
@@ -143,7 +144,7 @@ def nearestIntersect(car):
 					#print("not wrapped around and passed")
 					pass
 
-	# print(nearestIntersect)
+	#print("car", car.getTrackNo(), ": nearest Intersection:", nearestIntersect)
 	return nearestIntersect
 
 
@@ -179,6 +180,7 @@ def intersectionTimes(car):
 	# the normal case: intersection is in front of the car on the track (no wrapping around)
 	else:
 		d = nextIntersect - car.PVA[0]
+		#print("delta d:", d, "car:", car.getTrackNo())
 
 	#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! figure out what the hell is going on here
 	# calculate intersections times based on kinematics
@@ -188,7 +190,7 @@ def intersectionTimes(car):
 		t_enter = -v/a + sqrt( (v**2/a**2) + 2/a * (d + 0.5*(carWidth)))
 		t_exit = 2**10
 	elif a < 0 and v < sqrt( abs(a)*(2*d+carWidth)):
-		print("Car will move backwards- braking hard")
+		#print("Car will move backwards- braking hard")
 		t_enter = 2**10
 		t_exit = 2**10
 	else:
@@ -298,7 +300,9 @@ while isRunning == True:
 
 
 		# no collision is going to happen! yayyy!!!
-		if car1_enter < car2_exit or car2_enter < car1_exit:
+		if car1_exit < car2_enter or car2_exit < car1_enter:
+			#print("no collision")
+			#print(car1_enter, car1_exit, car2_enter, car2_exit)
 			# if either of the cars are moving at terminal velocity already
 			# then just move the cars at a constant velocity
 			# otherwise speed the car up
@@ -314,7 +318,7 @@ while isRunning == True:
 		# BEGIN ACTUAL PART OF ALGORITHM!!!
 
 		else:
-
+			#print("cars will crash")
 			# determine which car will reach intersection faster
 
 
