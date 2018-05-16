@@ -15,10 +15,10 @@ import time
 
 # INPUTS THAT CAN BE CHANGED
 
-rows = 4
-cols = 4
-width = 840
-height = 520
+rows = 3
+cols = 3
+width = 400
+height = 360
 timeStep = 0.01
 carLength = 25
 carWidth = 17
@@ -64,7 +64,7 @@ for i in range(rows):
 def nearestIntersect(car):
 
 	# offset location to account for length of the entire car relative to position calculations
-	offset = carLength + carWidth #*0.5
+	offset = carLength + carWidth
 
 	intersections = track.getIntersections()
 	nearestIntersect = (-1,-1)
@@ -307,64 +307,129 @@ while isRunning == True:
 		car2_v = carInformation[car2][1][1]
 
 
-		# no collision is going to happen! yayyy!!!
-		if car1_exit < car2_enter or car2_exit < car1_enter:
-			#print("no collision")
-			#print(car1_enter, car1_exit, car2_enter, car2_exit)
-			# if either of the cars are moving at terminal velocity already
-			# then just move the cars at a constant velocity
-			# otherwise speed the car up
-			for carNoCollision in possibleCrashPair:
-				carNoCollision_v = carInformation[carNoCollision][1][1]
-				if carNoCollision_v == v_term:
-					carNoCollision.moveConstantV()
+# 		# no collision is going to happen! yayyy!!!
+# 		if car1_exit < car2_enter or car2_exit < car1_enter:
+# 			#print("no collision")
+# 			#print(car1_enter, car1_exit, car2_enter, car2_exit)
+# 			# if either of the cars are moving at terminal velocity already
+# 			# then just move the cars at a constant velocity
+# 			# otherwise speed the car up
+# 			for carNoCollision in possibleCrashPair:
+# 				carNoCollision_v = carInformation[carNoCollision][1][1]
+# 				if carNoCollision_v == v_term:
+# 					carNoCollision.moveConstantV()
+# 				else:
+# 					carNoCollision.speedUp()
+
+# #############################################################################
+# 		# COLLISION IS GOING TO HAPPEN IN THE FRONT HALF OF THE Car
+# 		# BEGIN ACTUAL PART OF ALGORITHM!!!
+
+# 		else:
+		#print("cars will crash")
+		# determine which car will reach intersection faster
+
+		t_panic = max([car1_v,car2_v])/maxAccel
+
+		print("t_panic :",t_panic,"(car",car1.getTrackNo()," and ",car2.getTrackNo(), ")")
+
+		####################################################
+		# if car1 will reach the intersection before car 2
+		if car1_enter < car2_enter:
+
+			# if car1 is not moving at terminal velocity
+			if car1_v < v_term:
+
+				if car1_enter <= t_panic:
+					# panic mode
+					#print("Car1 light Speed, Car2 hard brake")
+					car1.lightSpeed()
+					car2.hardBrake()
 				else:
-					carNoCollision.speedUp()
+					# accelerate car1 and let car2 move at constant velocity
+					car1.speedUp()
+					car2.moveConstantV()
 
-#############################################################################
-		# COLLISION IS GOING TO HAPPEN IN THE FRONT HALF OF THE Car
-		# BEGIN ACTUAL PART OF ALGORITHM!!!
+			# if car1 is moving at terminal velocity
+			else:
 
+				if car1_enter <= t_panic:
+					# panic mode
+					car1.moveConstantV()
+					car2.hardBrake()
+				else:
+					# continue to move car1 at constant velocity and brake car2
+					car1.moveConstantV()
+					car2.brake()
+
+		#####################################################
+		# if car2 will reach the intersection before car1
+		elif car2_enter < car1_enter:
+
+			# if car2 is not moving at terminal velocity
+			if car2_v < v_term:
+
+				if car2_enter <= t_panic:
+					# panic mode
+					car2.lightSpeed()
+					car1.hardBrake()
+				else:
+					# accelerate car2 and let car1 move at constant velocity
+					car2.speedUp()
+					car1.moveConstantV()
+
+			# if car2 is moving at terminal velocity
+			else:
+
+				if car2_enter <= t_panic:
+					car2.moveConstantV()
+					car1.hardBrake()
+				else:
+					# continue to move car1 at constant velocity and brake car2
+					car2.moveConstantV()
+					car1.brake()
+
+		#####################################################
+		# if the cars will reach the intersection at the exact same time
 		else:
-			#print("cars will crash")
-			# determine which car will reach intersection faster
 
-			t_panic = max([car1_v,car2_v])/maxAccel
+			# determine which car is moving faster
 
-			#print("t_panic :",t_panic,"(car",car1.getTrackNo()," and ",car2.getTrackNo(), ")")
-
-			####################################################
-			# if car1 will reach the intersection before car 2
-			if car1_enter < car2_enter:
+			# if car1 is moving faster
+			if car2_v < car1_v:
 
 				# if car1 is not moving at terminal velocity
 				if car1_v < v_term:
 
 					if car1_enter <= t_panic:
 						# panic mode
-						#print("Car1 light Speed, Car2 hard brake")
 						car1.lightSpeed()
 						car2.hardBrake()
+
 					else:
-						# accelerate car1 and let car2 move at constant velocity
+						# speed up car1
+						# slow down car2
 						car1.speedUp()
-						car2.brake() #car2.moveConstantV()
+						car2.moveConstantV() #car2.brake()
 
 				# if car1 is moving at terminal velocity
-				else:
+				else: 
 
 					if car1_enter <= t_panic:
 						# panic mode
 						car1.moveConstantV()
 						car2.hardBrake()
+
 					else:
-						# continue to move car1 at constant velocity and brake car2
+						# move car1 at constant velocity
+						# slow down car2
 						car1.moveConstantV()
 						car2.brake()
 
-			#####################################################
-			# if car2 will reach the intersection before car1
-			elif car2_enter < car1_enter:
+			####################################################
+
+			# if car2 is moving faster
+			elif car1_v < car2_v:
 
 				# if car2 is not moving at terminal velocity
 				if car2_v < v_term:
@@ -373,130 +438,65 @@ while isRunning == True:
 						# panic mode
 						car2.lightSpeed()
 						car1.hardBrake()
+
 					else:
-						# accelerate car2 and let car1 move at constant velocity
+						# speed up car2
+						# slow down car1
 						car2.speedUp()
-						car1.brake() #car1.moveConstantV()
+						car1.moveConstantV() #car1.brake()
 
 				# if car2 is moving at terminal velocity
-				else:
+				else: 
 
 					if car2_enter <= t_panic:
+						# panic mode
 						car2.moveConstantV()
 						car1.hardBrake()
+
 					else:
-						# continue to move car1 at constant velocity and brake car2
+						# move car2 at constant velocity
+						# slow down car1
 						car2.moveConstantV()
 						car1.brake()
 
-			#####################################################
-			# if the cars will reach the intersection at the exact same time
+			####################################################
+
+			# car1 and car2 are moving at the same velocity
 			else:
+				# randomly select a car to speed up and a car to slow down
+				carSlow = choice([car1,car2])
 
-				# determine which car is moving faster
-
-				# if car1 is moving faster
-				if car2_v < car1_v:
-
-					# if car1 is not moving at terminal velocity
-					if car1_v < v_term:
-
-						if car1_enter <= t_panic:
-							# panic mode
-							car1.lightSpeed()
-							car2.hardBrake()
-
-						else:
-							# speed up car1
-							# slow down car2
-							car1.speedUp()
-							car2.brake()
-
-					# if car1 is moving at terminal velocity
-					else: 
-
-						if car1_enter <= t_panic:
-							# panic mode
-							car1.moveConstantV()
-							car2.hardBrake()
-
-						else:
-							# move car1 at constant velocity
-							# slow down car2
-							car1.moveConstantV()
-							car2.brake()
-
-				####################################################
-
-				# if car2 is moving faster
-				elif car1_v < car2_v:
-
-					# if car2 is not moving at terminal velocity
-					if car2_v < v_term:
-
-						if car2_enter <= t_panic:
-							# panic mode
-							car2.lightSpeed()
-							car1.hardBrake()
-
-						else:
-							# speed up car2
-							# slow down car1
-							car2.speedUp()
-							car1.brake()
-
-					# if car2 is moving at terminal velocity
-					else: 
-
-						if car2_enter <= t_panic:
-							# panic mode
-							car2.moveConstantV()
-							car1.hardBrake()
-
-						else:
-							# move car2 at constant velocity
-							# slow down car1
-							car2.moveConstantV()
-							car1.brake()
-
-				####################################################
-
-				# car1 and car2 are moving at the same velocity
-				else:
-					# randomly select a car to speed up and a car to slow down
-					carSlow = choice([car1,car2])
-
-					for car in [car1,car2]:
-						if car == carSlow:
-							continue
-						else:
-							carFast = car
-
-					# if they are not moving at terminal velocity
-					if car1_v < v_term:
-
-						if car1_enter <= t_panic:
-							# panic mode
-							carSlow.hardBrake()
-							carFast.lightSpeed()
-
-						else:
-							# slow down car to be slowed, and speed up the other one
-							carSlow.brake()
-							carFast.speedUp()
-
-					# if they are moving at terminal velocity
+				for car in [car1,car2]:
+					if car == carSlow:
+						continue
 					else:
+						carFast = car
 
-						if car1_enter <= t_panic:
-							# panic mode
-							carSlow.hardBrake()
-							carFast.moveConstantV()
+				# if they are not moving at terminal velocity
+				if car1_v < v_term:
 
-						else:
-							# slow down car to be slowed
-							carSlow.brake()
-							carFast.moveConstantV()
+					if car1_enter <= t_panic:
+						# panic mode
+						carSlow.hardBrake()
+						carFast.lightSpeed()
+
+					else:
+						# slow down car to be slowed, and speed up the other one
+						carSlow.moveConstantV() #carSlow.brake()
+						carFast.speedUp()
+
+				# if they are moving at terminal velocity
+				else:
+
+					if car1_enter <= t_panic:
+						# panic mode
+						carSlow.hardBrake()
+						carFast.moveConstantV()
+
+					else:
+						# slow down car to be slowed
+						carSlow.brake()
+						carFast.moveConstantV()
 
 
 	##############################################

@@ -1,6 +1,7 @@
 ##################
 ## gui.py
 ##      Simple animation to display self-driving car simulation
+##      Uses points as cars, and circles for intersections
 ##
 ##      Austin Chun
 ##################
@@ -11,33 +12,27 @@ import time
 import random
 
 
-
 class GUI():
 
-    firstCarIndex = 13
+    firstCarIndex = 13 # Index of tkinter objects (lines, boxes etc)
     overlaps = []
     # Class constants
     CAR_LENGTH = 20
     CAR_WIDTH = 12
+    INTERSECTiON_RADIUS = 20
 
 
-    # class guiCar():
-    #     def __init__(self, ID, direction, initPosX, initPosY,):
-    #         self.ID = ID
-    #         self.direction = direction # 0 = Vertical, 1 = Horizontal
-    #         # Upper left corner
-    #         self.x = initPosX
-    #         self.y = initPosY
-
-
-
+    # rows: # of horizontal lanes
+    # cols: # of vertical lanes
+    # width: of window in pixels
+    # height: of window in pixels
     def __init__(self, rows, cols, width, height):
         self.rows = rows
         self.cols = cols
         self.width = width
         self.height = height
 
-        self.numCars = rows + cols
+        self.numCars = rows + cols # one car per lane
 
         self.startFlag = False
         self.notQuit = True
@@ -70,7 +65,7 @@ class GUI():
 
         # Dictionary for car objects (in reality, just indexes as objects in self.w)
         self.cars = {}
-        # Dictionary of car positions (center of body)
+        # Dictionary of car positions (x,y)
         self.carPos = {}
         for i in range(cols):
             self.carPos[i] = 0
@@ -99,31 +94,6 @@ class GUI():
         print("Quit")
         self.notQuit = False
         # self.tk.destroy()
-
-
-    # def move(self):
-    #     if self.startFlag:
-    #         inc = 2
-    #     else:
-    #         inc = 0
-
-    #     for col in range(self.cols):
-    #         if(self.w.coords(self.cars[col])[1] >= self.height):
-    #             self.w.move(self.cars[col], 0, -(self.height+self.CAR_LENGTH))
-    #             self.carPos[col] -= self.height+self.CAR_LENGTH
-    #         self.w.move(self.cars[col], 0, inc)
-
-    #         self.carPos[col] += inc
-
-
-    #     for row in range(self.rows):
-    #         if(self.w.coords(self.cars[row+self.cols])[0] >= self.width):
-    #             self.w.move(self.cars[row+self.cols], -(self.width+self.CAR_LENGTH), 0)
-    #             self.carPos[row+self.cols] -= (self.width+self.CAR_LENGTH)
-    #         self.w.move(self.cars[row+self.cols], inc, 0)
-
-    #         self.carPos[row+self.cols] += inc
-
 
     def animate(self, carPositions):
         # if self.startFlag:

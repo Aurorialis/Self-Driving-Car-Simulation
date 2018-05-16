@@ -1,8 +1,5 @@
 # maximum acceleration of a car (both speeding up and braking)
-normalAccel = 100
-normalBrake = -100
-maxAccel = 2000
-maxBrake = -2000
+
 
 class Car():
 	"""creates the car object"""
@@ -15,7 +12,7 @@ class Car():
 
 
 
-	def __init__(self, trackNumber, initPos, initV, initAccel, carLength, carWidth, track, timeStep, v_term):
+	def __init__(self, trackNumber, initPos, initV, initAccel, carLength, carWidth, track, timeStep, v_term, accel, maxAccel):
 		self.carWidth = carWidth # length of the car
 		self.carLength = carLength # width of the car
 		self.PVA = [initPos, initV, initAccel]
@@ -23,6 +20,10 @@ class Car():
 		self.track = track
 		self.timeStep = timeStep
 		self.v_term = v_term
+		self.normalAccel = accel
+		self.normalBrake = -1*accel
+		self.maxAccel = maxAccel
+		self.maxBrake = -1 * maxAccel
 
 	# returns the track number that the car is on
 	def getTrackNo(self):
@@ -91,7 +92,7 @@ class Car():
 	# move the car with constant velocity - not zero so that we don't divide by 0
 	def moveConstantV(self):
 		#print("constant V - car, %d" %self.trackNumber)
-		self.setAccel(0.000001)
+		self.setAccel(-1)
 		self.updatePV()
 
 	# # move the car with constant acceleration
@@ -100,7 +101,7 @@ class Car():
 
 	def speedUp(self):
 		#print("speed up - car, %d" %self.trackNumber)
-		self.setAccel(normalAccel)
+		self.setAccel(self.normalAccel)
 		self.updatePV()
 		# # if car is already speeding up, increase acceleration
 		# if self.PVA[2] > 0:
@@ -113,13 +114,13 @@ class Car():
 
 	def lightSpeed(self):
 		#print("LIGHT SPEED - car, %d" %self.trackNumber)
-		self.setAccel(maxAccel)
+		self.setAccel(self.maxAccel)
 		self.updatePV()
 
 	# slow the car down
 	def brake(self):
 		#print("brake - car, %d" %self.trackNumber)
-		self.setAccel(normalBrake)
+		self.setAccel(self.normalBrake)
 		# # if car is already braking, increase braking amount
 		# if self.PVA[2] < 0:
 		# 	self.PVA[2] += 0.1*(self.PVA[2])
@@ -132,7 +133,7 @@ class Car():
 	# brake as quickly as possible
 	def hardBrake(self):
 		#print("HARD BRAKE- car, %d" %self.trackNumber)
-		self.setAccel(maxBrake)
+		self.setAccel(self.maxBrake)
 		self.updatePV()
 
 
