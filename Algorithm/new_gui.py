@@ -17,9 +17,10 @@ class GUI():
     firstCarIndex = 13 # Index of tkinter objects (lines, boxes etc)
     overlaps = []
     # Class constants
-    CAR_LENGTH = 20
-    CAR_WIDTH = 12
+    # CAR_LENGTH = 20
+    # CAR_WIDTH = 12
     INTERSECTiON_RADIUS = 20
+    CAR_RADIUS = 2
 
 
     # rows: # of horizontal lanes
@@ -34,6 +35,7 @@ class GUI():
 
         self.numCars = rows + cols # one car per lane
 
+        # Flags for tkinter buttons
         self.startFlag = False
         self.notQuit = True
 
@@ -56,7 +58,7 @@ class GUI():
         self.rowSpacing = rowSpacing
         self.colSpacing = colSpacing
 
-
+        # Crossword ordering
         for row in range(1,rows+1):
             self.w.create_line(0, row*rowSpacing, width, row*rowSpacing)
         for col in range(1,cols+1):
@@ -64,22 +66,24 @@ class GUI():
 
 
         # Dictionary for car objects (in reality, just indexes as objects in self.w)
+        # Crossword ordering
         self.cars = {}
-        # Dictionary of car positions (x,y)
+        # Dictionary of car positions in 1D (since restricted to linear motion
         self.carPos = {}
         for i in range(cols):
+            # Start at top edge
             self.carPos[i] = 0
-            self.cars[i] = self.w.create_rectangle(
-                                (i+1)*colSpacing-GUI.CAR_WIDTH/2, self.carPos[i]-GUI.CAR_LENGTH-GUI.CAR_WIDTH/2,
-                                (i+1)*colSpacing+GUI.CAR_WIDTH/2, self.carPos[i]-GUI.CAR_WIDTH/2,
-                                fill='green')
+            # create_oval(x0, y0, x1, y1) as top-left and bottom-right corners
+            self.cars[i] = self.w.create_oval((i+1)*colSpacing-self.CAR_RADIUS, -self.CAR_RADIUS,
+                                              (i+1)*colSpacing+self.CAR_RADIUS, +self.CAR_RADIUS,
+                                              fill='blue')
 
         for i in range(rows):
+            # Start on left edge
             self.carPos[i+cols] = 0
-            self.cars[i+cols] = self.w.create_rectangle(
-                                self.carPos[i+cols]-GUI.CAR_LENGTH-GUI.CAR_WIDTH/2, (i+1)*rowSpacing-GUI.CAR_WIDTH/2,
-                                self.carPos[i+cols]-GUI.CAR_WIDTH/2, (i+1)*rowSpacing+GUI.CAR_WIDTH/2,
-                                fill='green')
+            self.cars[i+cols] = self.w.create_oval(-self.CAR_RADIUS, (i+1)*rowSpacing-self.CAR_RADIUS,
+                                                   +self.CAR_RADIUS, (i+1)*rowSpacing+self.CAR_RADIUS,
+                                                   fill='blue')
 
         # Show GUI
         self.tk.update()
@@ -141,39 +145,39 @@ class GUI():
 # Test Script #
 ###############
 
-# NUM_CARS = 6
-# WINDOW_WIDTH = 400
-# WINDOW_HEIGHT = 300
+NUM_CARS = 6
+WINDOW_WIDTH = 400
+WINDOW_HEIGHT = 300
 
-# carPos = [[0],[0],[0],[0],[0],[0]]
-# def generateMoves(carPos):
+carPos = [[0],[0],[0],[0],[0],[0]]
+def generateMoves(carPos):
 
-#     for i in range(NUM_CARS):
-#         carPos[i][0] += (random.randint(1,4)+ i%2)
-#         # print(carPos[i][0])
-#         if(i < 3):
-#             carPos[i][0] = carPos[i][0] % WINDOW_HEIGHT
-#         else:
-#             carPos[i][0] = carPos[i][0] % WINDOW_WIDTH
-#         # print(carPos)
-#     return carPos
+    for i in range(NUM_CARS):
+        carPos[i][0] += (random.randint(1,4)+ i%2)
+        # print(carPos[i][0])
+        if(i < 3):
+            carPos[i][0] = carPos[i][0] % WINDOW_HEIGHT
+        else:
+            carPos[i][0] = carPos[i][0] % WINDOW_WIDTH
+        # print(carPos)
+    return carPos
 
 
 
-# g = GUI(3,3,WINDOW_WIDTH,WINDOW_HEIGHT)
-# while True:
-#     if g.notQuit:
-#         if g.startFlag:
-#             carPos = generateMoves(carPos)
-#             g.animate(carPos)
-#             g.checkCollision()
+g = GUI(3,3,WINDOW_WIDTH,WINDOW_HEIGHT)
+while True:
+    if g.notQuit:
+        if g.startFlag:
+            carPos = generateMoves(carPos)
+            g.animate(carPos)
+            g.checkCollision()
 
-#         g.tk.update_idletasks()
-#         g.tk.update()
-#         time.sleep(0.02)
-#     else:
-#         g.tk.destroy()
-#         break
-# print("Closed GUI")
+        g.tk.update_idletasks()
+        g.tk.update()
+        time.sleep(0.02)
+    else:
+        g.tk.destroy()
+        break
+print("Closed GUI")
 
-# g.tk.mainloop()
+g.tk.mainloop()
