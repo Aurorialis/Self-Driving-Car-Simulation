@@ -128,7 +128,6 @@ def nearestIntersect(car):
 			if carPosition >= lastLane:
 				newMin = whereOnTrack
 				if newMin < currentMin:
-					#print("wrapped around")
 					currentMin = newMin
 					nearestIntersect = i 
 				else:
@@ -166,7 +165,7 @@ def intersectionTimes(car):
 
 	# get relevant location of next intersection (single value instead of a coordinate)
 	# depends on whether car is on a horizontal or vertical track
-	if car.getTrackNo() % 2 == 0: 
+	if car.getTrackNo() > cols: 
 		# horizontal track
 		nextIntersect = nearestIntersect(car)[0]
 	else:
@@ -177,7 +176,7 @@ def intersectionTimes(car):
 	# add the position of the next intersection to the remaining distance on the track
 	# before the car wraps around
 	if nextIntersect < car.PVA[0]:
-		if car.getTrackNo() % 2 == 0: 
+		if car.getTrackNo() > cols: 
 			# horizontal track
 			d = nextIntersect + track.getWidth()
 		else:
@@ -192,18 +191,18 @@ def intersectionTimes(car):
 	#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! figure out what the hell is going on here
 	# calculate intersections times based on kinematics
 	# if the car is accelerating backwards (so that kinematics thinks car will move backwards)
-	if a < 0 and v > sqrt( abs(a)*(2*d+carWidth)) and v < sqrt( abs(a)*(2*d + 2*carLength + carWidth)):
+	if a < 0 and v > sqrt( abs(a)*(2*d)) and v < sqrt( abs(a)*(2*d)):
 		# set intersection time to be infinity
-		t_enter = -v/a + sqrt( (v**2/a**2) + 2/a * (d + 0.5*(carWidth)))
+		t_enter = -v/a + sqrt( (v**2/a**2) + 2/a * d)
 		t_exit = 2**10
-	elif a < 0 and v < sqrt( abs(a)*(2*d+carWidth)):
+	elif a < 0 and v < sqrt( abs(a)*(2*d)):
 		#print("Car will move backwards- braking hard")
 		t_enter = 2**10
 		t_exit = 2**10
 	else:
 		# otherwise do normal kinematics
-		t_enter = -v/a + sqrt( (v**2/a**2) + 2/a * (d + 0.5*(carWidth)))
-		t_exit = -v/a + sqrt( (v**2/a**2) + 2/a * (d + (carLength + 0.5*carWidth)))
+		t_enter = -v/a + sqrt( (v**2/a**2) + 2/a * d)
+		t_exit = -v/a + sqrt( (v**2/a**2) + 2/a * d)
 
 	intersectionTimes = [t_enter, t_exit]
 	#print(intersectionTimes)
