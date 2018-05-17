@@ -17,9 +17,8 @@ class GUI():
     firstCarIndex = 13 # Index of tkinter objects (lines, boxes etc)
     overlaps = []
     # Class constants
-    # CAR_LENGTH = 20
-    # CAR_WIDTH = 12
-    INTERSECTiON_RADIUS = 20
+
+    INTERSECTION_RADIUS = 20
     CAR_RADIUS = 2
 
 
@@ -32,6 +31,8 @@ class GUI():
         self.cols = cols
         self.width = width
         self.height = height
+
+        self.firstCarIndex += rows*cols
 
         self.numCars = rows + cols # one car per lane
 
@@ -57,6 +58,17 @@ class GUI():
         colSpacing = width/(cols+1)
         self.rowSpacing = rowSpacing
         self.colSpacing = colSpacing
+
+        self.intPos = []
+        self.intersectionHandles = []
+        for row in range(1,rows+1):
+            for col in range(1,cols+1):
+                self.intPos += [col*colSpacing, row*rowSpacing]
+
+                self.intersectionHandles += [self.w.create_oval(
+                    col*colSpacing - self.INTERSECTION_RADIUS, row*rowSpacing - self.INTERSECTION_RADIUS,
+                    col*colSpacing + self.INTERSECTION_RADIUS, row*rowSpacing + self.INTERSECTION_RADIUS,
+                    outline='green',fill='white')]
 
         # Crossword ordering
         for row in range(1,rows+1):
@@ -146,7 +158,7 @@ class GUI():
 ###############
 
 NUM_CARS = 6
-WINDOW_WIDTH = 400
+WINDOW_WIDTH = 600
 WINDOW_HEIGHT = 300
 
 carPos = [[0],[0],[0],[0],[0],[0]]
