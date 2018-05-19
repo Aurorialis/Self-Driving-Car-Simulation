@@ -52,7 +52,6 @@ class Track():
                 intersection = [(x_intersect, y_intersect)]
                 intersections += intersection
 
-        #print(intersections)
         return intersections
 
 

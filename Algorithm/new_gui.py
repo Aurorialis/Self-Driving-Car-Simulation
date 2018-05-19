@@ -18,7 +18,7 @@ class GUI():
     overlaps = []
     # Class constants
 
-    INTERSECTION_RADIUS = 20
+    INTERSECTION_RADIUS = 5
     CAR_RADIUS = 2
 
 

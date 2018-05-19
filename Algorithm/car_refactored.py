@@ -63,7 +63,7 @@ class Car():
 
 		# wrap around the track if car is about to run off of the track
 
-		if self.getTrackNo() % 2 == 0: # even track, tracks runs horizontally
+		if self.getTrackNo() > self.track.getCols(): # even track, tracks runs horizontally
 			trackLength = self.track.getWidth()
 		else: # odd track, track runs vertically
 			trackLength = self.track.getHeight()

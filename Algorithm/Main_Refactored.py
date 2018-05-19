@@ -2,7 +2,7 @@
 from random import choice
 from random import randint
 
-from gui import GUI
+from new_gui import GUI
 from track import Track
 from car_refactored import Car
 from math import floor, sqrt
@@ -15,13 +15,11 @@ import time
 
 # INPUTS THAT CAN BE CHANGED
 
-rows = 4
-cols = 4
+rows = 2
+cols = 2
 width = 840
 height = 520
 timeStep = 0.01
-# carLength = 25
-# carWidth = 17
 IntersectionRadius = 25
 accel = 50
 maxAccel = 200
@@ -32,17 +30,17 @@ track = Track(rows, cols, width, height, timeStep)
 # calculated based on above inputs
 minIntersectDistance = min([track.getRowSpacing(), track.getColSpacing()]) # minimum distance between tracks
 v_term = sqrt(2*(minIntersectDistance-IntersectionRadius)*maxAccel) 
-# average velocity to travel the minimum distance with max acceleration?????????????????????????????????????????????????
+# average velocity to travel minimum distance between tracks with maximum acceleration
 print(v_term)
 
 
 #############################################################
 # initialize all of the cars and set them to some initial position 
-# (at the beginning of the track with zero velocity)
+# (at the beginning of the track with the v_term velocity)
 
 allCars = []
 
-# initialize the vertical cars first
+# initialize the vertical cars first 
 for i in range(cols):
 	currentCar = Car(i, randint(0,height), 200, 100, track, timeStep, v_term, accel, maxAccel) 
 	allCars += [currentCar]
@@ -61,75 +59,70 @@ for i in range(rows):
 def nearestIntersect(car):
 
 	intersections = track.getIntersections()
+
+	# set some impossible intersection value to start with
 	nearestIntersect = (-1,-1)
 
-	if car.getTrackNo() > cols: # horizontal track
-		# get exact row pixel number
-		rowNum = car.getTrackNo()/2
-		pixel = (rowNum +1) * track.getRowSpacing() # row number of the track
-		currentMin = track.getWidth()
+	# tracks begin indexing at 0
+	if car.getTrackNo() >= cols: # horizontal track
+		rowNum = car.getTrackNo() - cols # determine the row number
+		pixValofTrack = (rowNum +1) * track.getRowSpacing() # exact x value
+		currentMin = track.getWidth() # currentMin start as the length of the track
 
 		trackType = 'horizontal'
 
 	else: # vertical track
-		# get exact col pixel number
-		colNum = floor(car.getTrackNo()/2)
-		pixel = (colNum + 1) * track.getColSpacing() # column number of the track
-		currentMin = track.getHeight()
+		colNum = car.getTrackNo() # determine the col number
+		pixValofTrack = (colNum + 1) * track.getColSpacing() # exact y value
+		currentMin = track.getHeight() # currentMin starts as the length of the track
 
 		trackType = 'vertical'
-
 
 	# determine the current position of the car
 	carPosition = car.getPos()
 
-	# # offset location of car so that nearestIntersect doesn't update until
-	# # the very end of the car is past the previous/current intersection
-	# carPosition = car.getPos()
-	# # make sure that the car position is not negative, and fix accordingly (previous position wraps around)
-	# if carPosition < 0:
-	# 	offsetRemainder = offset - car.getPos()
-	# 	# horizontal track
-	# 	if trackType == 'horizontal':
-	# 		carPosition = track.getWidth() - offsetRemainder
-	# 	# vertical track
-	# 	else:
-	# 		carPosition = track.getHeight() - offsetRemainder
-	# else:
-	# 	carPosition = carPosition
-
-
-
 	# loop through list of list of intersections, and find next upcoming intersection			
-	for i in intersections:
+	for inter in intersections:
 		if trackType == 'horizontal':
-			whereTrack = i[1] # row value of the horizontal track
-			whereOnTrack = i[0] # location of vertical intersection with the track
+			whereIsTrack = inter[1] # x value of the horizontal track
+			whereOnTrack = inter[0] # location of vertical intersection with the track (y)
 			spacing = track.getColSpacing()
-			lastLane = spacing * track.getCols()
+			lastLane = spacing * cols
 
 		else:
-			whereTrack = i[0] # col value of the vertical track
-			whereOnTrack = i[1] # location of horizontal intersection with the track
+			whereIsTrack = inter[0] # y value of the vertical track
+			whereOnTrack = inter[1] # location of horizontal intersection with the track (x)
 			spacing = track.getRowSpacing()
-			lastLane = spacing * track.getRows()
+			lastLane = spacing * rows
 
 		# # eliminate intersections on a different row/column
-		# if whereTrack > pixel+50 or whereTrack < pixel - 50:
+		# if whereIsTrack > pixValofTrack+50 or whereIsTrack < pixValofTrack - 50:
 		# 	pass
 
+# IF THE TRACK LINES HAVE A NON-ZERO THICKNESS, THEN IT MUST BE ACCOUNTED FOR IN THE NEXT LINE(SEE ABOVE) --------------------------------
+
 		# eliminate intersections on a different row/column
-		if whereTrack > pixel or whereTrack < pixel:
+		if whereIsTrack > pixValofTrack or whereIsTrack < pixValofTrack:
 			pass
 
-		# find the nearest intersection
+		# the intersection is on the same track as the car
+		# so find the nearest intersection to the car (upcoming)
 		else:
+# ----------------------------------------------------------------------------------------------------------------------------------------
+# I HAVE NO IDEA WHAT THIS IF STATEMENT IS DOING. IT SHOULD BE WRAPPING AROUND IF THE CAR IS PAST THE LAST INTERSECTION OF
+# THAT PARTICULAR TRACK, BUT IT REALLY DOESN'T SEEM LIKE THAT'S WHAT IT IS DOING. (THE STATEMENT IMMEDIATELY BELOW)
+# ALSO WHAT ON EARTH IS CURRENTMIN SUPPOSED TO BE? 
+
 			# check if next intersection is wrapped around on the other side of the track
 			if carPosition >= lastLane:
+				# the car is past the last lane
 				newMin = whereOnTrack
+				# check if the the location of the last intersection of the track is
+				# less than the length of the track
 				if newMin < currentMin:
+					# if it is then the 
 					currentMin = newMin
-					nearestIntersect = i 
+					nearestIntersect = inter 
 				else:
 					#print("wrapped around and passed")
 					pass
@@ -145,7 +138,7 @@ def nearestIntersect(car):
 				if newMin < currentMin:
 					#print("not wrapped around")
 					currentMin = newMin
-					nearestIntersect = i 
+					nearestIntersect = inter 
 				else:
 					#print("not wrapped around and passed")
 					pass
@@ -153,7 +146,7 @@ def nearestIntersect(car):
 	#print("car", car.getTrackNo(), ": nearest Intersection:", nearestIntersect)
 	return nearestIntersect
 
-
+####################################################################################################
 # Get the time in which the car will start crossing the intersection, and will leave the intersection
 # returns a list of size two
 # the first item is when the leading edge of the car enters the intersection
@@ -522,12 +515,4 @@ while isRunning == True:
 		# if moving at terminal velocity, just keep moving with same velocity
 		else:
 			lonelyCar.moveConstantV()
-
-
-
-
-
-
-
-
 
