@@ -1,0 +1,43 @@
+
+Architecture coding
+
+
+Want it all based on real life
+    Use pixel to meter conversion
+
+    Car:
+        Length:     5 meters    (Civic = 4.6 m = 182")
+        Max Vel:    18 m/s      (40 mph)
+        Max Acc:    3 m/s^2     (0-60 in say 10 s =>  26 m/s / 10 s => 2.6 m/s^2)
+        Max Dec:    7 m/s^2     (60-0 in 120 ft)
+
+    Assumption:
+        If going Max Vel thru intersection, always able to stop before next intersection w/ full dec
+
+    Intersection:
+        Int_Dist >= 25 m        (D = v_m^2 /(2*a_m) = 18^2 / 14 = 23.1 m 
+        add Car Length
+        Int_dist >= 30 m (ie 6 car lengths)
+
+
+    Pixel-to-Meter Ratio
+        1 pix = 0.5 m
+        10 pixel car
+        Minimum 60 pixel Intersection distance
+
+
+###
+Everything should be in meters, and continuous (float)
+Only the GUI will be discretized
+###
+
+GUI
+    Display environment (car positions, updated every timestep)
+
+    Needs:
+        number of rows, cols, window dimensions, intersection radius
+
+Env
+    Hold all information
+    States of all cars  (position, velocity, acceleration)
+

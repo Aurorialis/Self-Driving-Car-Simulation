@@ -14,7 +14,7 @@ import random
 
 class GUI():
 
-    INTERSECTION_RADIUS = 5
+    INTERSECTION_RADIUS = 10
     CAR_RADIUS = 2
 
     # rows: # of horizontal lanes
@@ -164,43 +164,43 @@ class GUI():
 ###############
 
 
-# NUM_ROWS = 5
-# NUM_COLS = 8
-# NUM_CARS = NUM_ROWS + NUM_COLS
-# WINDOW_WIDTH = 600
-# WINDOW_HEIGHT = 300
+NUM_ROWS = 5
+NUM_COLS = 8
+NUM_CARS = NUM_ROWS + NUM_COLS
+WINDOW_WIDTH = 600
+WINDOW_HEIGHT = 300
 
-# carPos = [0]*NUM_CARS
-
-
-# def generateMoves(carPos):
-
-#     for i in range(NUM_CARS):
-#         carPos[i] += (random.randint(1,4)+ i%2)
-#         # print(carPos[i][0])
-#         if(i < NUM_COLS):
-#             carPos[i] = carPos[i] % WINDOW_HEIGHT
-#         else:
-#             carPos[i] = carPos[i] % WINDOW_WIDTH
-#     # print(carPos)
-#     return carPos
+carPos = [0]*NUM_CARS
 
 
+def generateMoves(carPos):
 
-# g = GUI(NUM_ROWS,NUM_COLS,WINDOW_WIDTH,WINDOW_HEIGHT)
-# while True:
-#     if g.notQuit:
-#         if g.startFlag:
-#             carPos = generateMoves(carPos)
-#             g.animate(carPos)
-#             g.checkCollision()
+    for i in range(NUM_CARS):
+        carPos[i] += (random.randint(1,4)+ i%2)
+        # print(carPos[i][0])
+        if(i < NUM_COLS):
+            carPos[i] = carPos[i] % WINDOW_HEIGHT
+        else:
+            carPos[i] = carPos[i] % WINDOW_WIDTH
+    # print(carPos)
+    return carPos
 
-#         g.tk.update_idletasks()
-#         g.tk.update()
-#         time.sleep(0.02)
-#     else:
-#         g.tk.destroy()
-#         break
-# print("Closed GUI")
 
-# g.tk.mainloop()
+
+g = GUI(NUM_ROWS,NUM_COLS,WINDOW_WIDTH,WINDOW_HEIGHT)
+while True:
+    if g.notQuit:
+        if g.startFlag:
+            carPos = generateMoves(carPos)
+            g.animate(carPos)
+            g.checkCollision()
+
+        g.tk.update_idletasks()
+        g.tk.update()
+        time.sleep(0.02)
+    else:
+        g.tk.destroy()
+        break
+print("Closed GUI")
+
+g.tk.mainloop()
