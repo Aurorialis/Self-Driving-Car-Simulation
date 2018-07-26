@@ -111,11 +111,13 @@ class GUI():
         self.notQuit = False
         # self.tk.destroy()
 
-    def animate(self, carPositions):
+    def animate(self, carPositions, collisions):
         # if self.startFlag:
         carPositions = [self.m2pix*x for x in carPositions]
         for i in range(self.numCars):
             self.moveCar(i, carPositions[i])
+
+        self.highlightCollision(collisions)
 
     def moveCar(self, carNum, pos): # Note: 1D position, determine direction from carNum
         if carNum < self.cols:
@@ -139,43 +141,6 @@ class GUI():
                     self.w.itemconfig(self.intersectionHandles[inter], fill='red')
                 else:
                     self.w.itemconfig(self.intersectionHandles[inter], fill='white')
-
-
-
-    # def checkCollision(self):
-    #     collisionExists = False
-
-    #     # Loop through intersections indexes
-    #     for inter in range( self.rows*self.cols ):
-    #         # Set fill to default
-    #         self.w.itemconfig(self.intersectionHandles[inter], fill='white')
-    #         # Check col car
-    #         colCar = inter % self.cols # index of the column car
-    #         colCarPos = self.carPos[colCar] # position of column car
-    #         interRow = (inter // self.cols) + 1
-
-    #         if( abs(colCarPos - interRow*self.rowSpacing) < self.INT_R ):
-    #             # Check row car
-    #             rowCar = (inter // self.cols) + self.cols
-    #             rowCarPos = self.carPos[rowCar]
-    #             interCol = (inter % self.cols) + 1 # what column is this intersection
-
-
-    #             if( abs(rowCarPos - interCol*self.colSpacing) < self.INT_R):
-    #                 # Set color to red!
-    #                 self.w.itemconfig(self.intersectionHandles[inter], fill='red')
-    #                 collisionExists = True
-
-    #     if(collisionExists):
-    #         time.sleep(0.02)
-    #                 # print("")
-    #                 # print("Inter: ",inter)
-    #                 # print("Row car: ", rowCar)
-    #                 # print("Row car pos: ", rowCarPos, "Row int: ", interRow*self.rowSpacing)
-    #                 # print("Col car: ", colCar)
-    #                 # print("Col car pos: ", colCarPos, "Col int: ", interCol*self.colSpacing)
-
-    #                 # time.sleep(1)
 
 
     def update(self):

@@ -10,7 +10,7 @@ import numpy as np
 class Env():
 
 
-    def __init__(self, rows, cols, width, height, CAR_R):
+    def __init__(self, rows, cols, width, height, CAR_R, maxV):
         self.ROWS = rows        # num rows (or horz cars)
         self.COLS = cols        # num cols (or vert cars)
         self.WIDTH = width      # width of window (meters)
@@ -24,6 +24,7 @@ class Env():
         self.ROW_D = self.HEIGHT/(self.ROWS+1)  # Row spacing dist (m)
         self.COL_D = self.WIDTH/(self.COLS+1)   # Col spacing dist (m)
 
+        self.maxV = maxV
 
         self.dt = 0.02  # seconds (50 Hz)
 
@@ -69,8 +70,8 @@ class Env():
         self.carPVA[:,1] = self.carPVA[:,1] + self.carPVA[:,2]*self.dt
 
 
-        # Keep car positions within window
         for car in range(self.numCars):
+            # Bound Position (within window)
             pos = self.carPVA[car,0]
             # Vert cars
             if(car < self.COLS):
@@ -81,7 +82,16 @@ class Env():
                 if(pos > self.WIDTH):
                     self.carPVA[car,0] = pos % self.WIDTH
 
+            # Bound Velocity (0 to maxVelocity)
+            vel = self.carPVA[car,1]
+            if(vel > self.maxV):
+                self.carPVA[car,1] = self.maxV
+            elif(vel < 0):
+                self.carPVA[car,1] = 0
 
+
+
+        self.collisionCheck()
 
         # self.carPVA[0:self.COLS,0] = [x%self.HEIGHT for x in self.carPVA[0:self.COLS,0] if x>self.HEIGHT]
         # self.carPVA[self.COLS:self.COLS+self.ROWS,0] = \
@@ -131,7 +141,7 @@ class Env():
     def getCarPoses(self):
         return self.carPVA[:,0]
 
-    def getState(self):
+    def getPVA(self):
         return self.carPVA[:,0:2]
 
 

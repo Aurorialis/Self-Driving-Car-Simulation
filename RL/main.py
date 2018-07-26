@@ -18,42 +18,36 @@ def main():
     NUM_CARS = NUM_ROWS + NUM_COLS
     WINDOW_WIDTH = 50          # meters
     WINDOW_HEIGHT = 50         # meters
-    CAR_R = 2.5                 # meters (typical car is 5 m long, so radius is 2.5 m)
+    CAR_R = 2.5                # meters (typical car is 5 m long, so radius is 2.5 m)
+
+    maxV = 18                  # meters/sec (18m/s = 40 mph) 
 
     # Initialzie Environment
-    env = Env(NUM_ROWS, NUM_COLS, WINDOW_WIDTH, WINDOW_HEIGHT, CAR_R)
+    env = Env(NUM_ROWS, NUM_COLS, WINDOW_WIDTH, WINDOW_HEIGHT, CAR_R, maxV)
 
     # Initialize GUI
     g = GUI(NUM_ROWS,NUM_COLS,WINDOW_WIDTH,WINDOW_HEIGHT, CAR_R)
 
     # Initialize decision algorithm
-    alg = Alg(NUM_ROWS, NUM_COLS, WINDOW_WIDTH, WINDOW_HEIGHT, CAR_R)
+    alg = Alg(NUM_ROWS, NUM_COLS, WINDOW_WIDTH, WINDOW_HEIGHT, CAR_R, maxV)
 
     curTime = 0
 
     while g.notQuit:
         if(g.startFlag):
 
-
-
             # Use algorithm to determine actions (based on current state)
-            action = alg.act( env.getState() )
+            obs = env.getPVA()
+            action = alg.act( obs )
 
-            # Take a step in the simulation
+            # Take a step in the simulation (internally checks collisions)
             env.step(action)
 
-            # if(env.collisionCheck()):
-            env.collisionCheck()
-            g.highlightCollision(env.collisions)
+            # Update gui with car 
+            state = env.getPVA()
 
-
-            # Update gui with car positions
-            state = env.getState()
-            # print(state[0,:])
-
-
-            g.animate( env.getCarPoses() )
-
+            # update GUI with car poses, and highlght collisions
+            g.animate( env.getCarPoses(), env.collisions)
 
             # print("Cur time:",round(curTime,3))
             curTime += 0.02
