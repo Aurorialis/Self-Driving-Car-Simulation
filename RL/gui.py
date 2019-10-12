@@ -29,7 +29,7 @@ class GUI():
         self.width = width_m*self.m2pix
         self.height = height_m*self.m2pix
 
-        self.CAR_R = 2  # Use Car as point
+        self.CAR_R = 4  # Use Car as point
         self.INT_R = car_r*self.m2pix # use car_r to define collision radius around intersection
 
         self.numCars = rows + cols # one car per lane
@@ -154,59 +154,62 @@ class GUI():
 # Test Script #
 ###############
 
-
-# NUM_ROWS = 5
-# NUM_COLS = 8
-# NUM_CARS = NUM_ROWS + NUM_COLS
-# WINDOW_WIDTH = 300          # meters
-# WINDOW_HEIGHT = 150         # meters
-# CAR_R = 2.5                 # meters (typical car is 5 m long, so radius is 2.5 m)
-
-
-# carPos = [0]*NUM_CARS
+def main():
+    NUM_ROWS = 3
+    NUM_COLS = 3
+    NUM_CARS = NUM_ROWS + NUM_COLS
+    WINDOW_WIDTH = 120          # meters
+    WINDOW_HEIGHT = 90         # meters
+    CAR_R = 2.5                 # meters (typical car is 5 m long, so radius is 2.5 m)
 
 
-# def generateMoves(carPos):
-
-#     for i in range(NUM_CARS):
-#         carPos[i] += (random.randint(1,4)+ i%2)
-#         # print(carPos[i][0])
-#         if(i < NUM_COLS):
-#             carPos[i] = carPos[i] % (WINDOW_HEIGHT*2)
-#         else:
-#             carPos[i] = carPos[i] % (WINDOW_WIDTH*2)
-#     # print(carPos)
-#     return carPos
+    carPos = [0]*NUM_CARS
 
 
+    def generateMoves(carPos):
 
-# g = GUI(NUM_ROWS,NUM_COLS,WINDOW_WIDTH,WINDOW_HEIGHT, CAR_R)
+        for i in range(NUM_CARS):
+            carPos[i] += (random.randint(1,4)+ i%2)
+            # print(carPos[i][0])
+            if(i < NUM_COLS):
+                carPos[i] = carPos[i] % (WINDOW_HEIGHT*2)
+            else:
+                carPos[i] = carPos[i] % (WINDOW_WIDTH*2)
+        # print(carPos)
+        return carPos
 
-# while g.notQuit:
-#     if g.startFlag:
-#         carPos = generateMoves(carPos)
-#         g.animate(carPos)
-#         g.checkCollision()
 
-#     g.update()
-#     time.sleep(0.02)
 
-# g.exit()
+    g = GUI(NUM_ROWS,NUM_COLS,WINDOW_WIDTH,WINDOW_HEIGHT, CAR_R)
 
-# print("Closed GUI")
+    while g.notQuit:
+        if g.startFlag:
+            carPos = generateMoves(carPos)
+            g.animate(carPos)
+            g.highlightCollision()
 
-# # while True:
-# #     if g.notQuit:
-# #         if g.startFlag:
-# #             carPos = generateMoves(carPos)
-# #             g.animate(carPos)
-# #             g.checkCollision()
+        g.update()
+        time.sleep(0.02)
 
-# #         g.update()
-# #         time.sleep(0.02)
-# #     else:
-# #         g.tk.destroy()
-# #         break
-# # print("Closed GUI")
+    g.exit()
 
-# g.tk.mainloop()
+    print("Closed GUI")
+
+    # while True:
+    #     if g.notQuit:
+    #         if g.startFlag:
+    #             carPos = generateMoves(carPos)
+    #             g.animate(carPos)
+    #             g.checkCollision()
+
+    #         g.update()
+    #         time.sleep(0.02)
+    #     else:
+    #         g.tk.destroy()
+    #         break
+    # print("Closed GUI")
+
+    g.tk.mainloop()
+
+if __name__ == '__main__':
+    main()
