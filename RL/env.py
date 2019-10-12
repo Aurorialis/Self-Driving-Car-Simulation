@@ -31,7 +31,7 @@ class Env():
         # Matrix of each cars position (column 0), velocity (column 1), acc (columm 2)
         # Continuous (float) values
         self.carPVA = np.zeros((self.numCars, 3))
-
+        self.dist = np.zeros(self.numCars)
 
         # Store intersection coordinates
         # Intersections indexed crossword
@@ -44,7 +44,7 @@ class Env():
         # Collision Flags, corresponding to intersection
         # Check for any 1's in array for collisions
         self.collisions = np.zeros((self.COLS, self.ROWS))
-
+        self.COLLISION = False # Flag to indicate collision
 
         # Store crossroads y coordinates (so vert cars just need to check this)
         self.yCrossCoords = np.zeros(self.ROWS)
@@ -61,13 +61,17 @@ class Env():
         @brief      step the environment forward one step
         
         @param      acc   A np vector of accelerations for each cat
+
+        @return     reward, and done flag (collision flag)
         """
         # Load new Accelerations
         self.carPVA[:,2] = acc
 
         # Kinematics
-        self.carPVA[:,0] = self.carPVA[:,0] + self.carPVA[:,1]*self.dt
-        self.carPVA[:,1] = self.carPVA[:,1] + self.carPVA[:,2]*self.dt
+        self.dist += self.carPVA[:,1]*self.dt
+
+        self.carPVA[:,0] += self.carPVA[:,1]*self.dt
+        self.carPVA[:,1] += self.carPVA[:,2]*self.dt
 
 
         for car in range(self.numCars):
@@ -91,7 +95,9 @@ class Env():
 
 
 
-        self.collisionCheck()
+        self._collisionCheck()
+
+        return self._reward(), self.COLLISION
 
         # self.carPVA[0:self.COLS,0] = [x%self.HEIGHT for x in self.carPVA[0:self.COLS,0] if x>self.HEIGHT]
         # self.carPVA[self.COLS:self.COLS+self.ROWS,0] = \
@@ -99,7 +105,17 @@ class Env():
 
 
 
-    def collisionCheck(self):
+    def _reward(self):
+        """
+        Define reward system:
+            +1 for every meter
+            -1000 for every collision
+        """
+        return np.sum(self.dist) - 1000.0*np.count_nonzero(self.collisions)
+
+
+
+    def _collisionCheck(self):
         """
         @brief      Checks for collisions 
               
@@ -130,20 +146,32 @@ class Env():
                     col = int(xCoord/self.COL_D - 1)
                     # Raise Collision flag for that intersection
                     if(occInts[car,col] == 1):
-                        self.collisions[car,col] = 1
-                        if(not COLLISION):
+                        # If just collided
+                        if(not self.COLLISION):
                             print("COLLISON!!!")
+                            self.COLLISION = True
+                            COLLISION = True
+                        # Set collisins
+                        self.collisions[car,col] = 1
                         print(" Collision at: (%d,%d)" %(car,col))
-                        COLLISION = True
+        
 
-        return COLLISION
+        self.COLLISION = COLLISION # gets false if no collisions in
 
-    def getCarPoses(self):
+        return self.COLLISION
+
+    def getP(self):
         return self.carPVA[:,0]
-
-    def getPVA(self):
+    def getPV(self):
         return self.carPVA[:,0:2]
+    def getPVA(self):
+        return self.carPVA
 
 
-
+    def reset(self):
+        """
+        Reset the environment (the car PVA, and collision map)
+        """
+        self.carPVA.fill(0)
+        self.collisions.fill(0)
 
